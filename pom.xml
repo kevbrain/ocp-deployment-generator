@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.bil.buildfactory</groupId>
+  <artifactId>openshift-deployment-generator-ms-parent</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  
+  <packaging>pom</packaging>
+  <name>openshift-deployment-generator-ms-parent</name>
+  
+  <parent>
+    	<groupId>org.springframework.boot</groupId>
+    	<artifactId>spring-boot-starter-parent</artifactId>
+    	<version>2.3.3.RELEASE</version>
+    </parent>
+    
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>1.8</java.version>
+    	<joinfaces.version>4.4.2</joinfaces.version>
+    	<maven-deployit-plugin.version>4.5.0</maven-deployit-plugin.version>
+    </properties>
+    <scm>
+        <connection>scm:git:http://bf-gitlab/gitlab/BuildFactory/openshift-deployment-generator.git</connection>
+        <developerConnection>scm:git:http://bf-gitlab/gitlab/BuildFactory/openshift-deployment-generator.git</developerConnection>
+        <url>http:/bf-gitlab/gitlab/BuildFactory/openshift-deployment-generator</url>
+        <tag>HEAD</tag>
+    </scm>
+    <distributionManagement>
+        <repository>
+            <id>${nexus.serverid}</id>
+            <name>Releases</name>
+            <url>${nexus.baseurl}/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>${nexus.serverid}</id>
+            <name>Snapshots</name>
+            <url>${nexus.baseurl}/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+    
+    <modules>
+        <module>openshift-deployment-generator-ms</module>
+        <module>openshift-deployment-generator-ms-dar</module>
+    </modules>
+</project>

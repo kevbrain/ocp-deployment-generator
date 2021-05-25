@@ -1,0 +1,4 @@
+bil.environment
+management.port
+server.port
+bil.micro.actuator.username

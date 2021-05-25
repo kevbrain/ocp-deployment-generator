@@ -1,0 +1,19 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: ${appName}-service
+  labels:
+    spring-boot: 'true'
+    spring-boot-env: {{bil.environment}}
+    bil.com/env:  {{bil.environment}}
+    user.name: {{bil.micro.actuator.username}}
+    user.password: {{bil.micro.actuator.password}}
+    app: ${appName}
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: {{server.port}}
+      targetPort: {{server.port}}
+  selector:
+    app: ${appName}

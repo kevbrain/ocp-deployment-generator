@@ -1,0 +1,95 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.bil.buildfactory</groupId>
+    <artifactId>openshift-deployment-generator-ms-parent</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+  <artifactId>openshift-deployment-generator-ms-dar</artifactId>
+  <packaging>dar</packaging>
+  <name>openshift-deployment-generator-ms-dar</name>
+  
+  
+  <build>
+        <plugins>
+            <plugin>
+                <groupId>com.xebialabs.deployit</groupId>
+                <artifactId>maven-deployit-plugin</artifactId>
+                <version>${maven-deployit-plugin.version}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <applicationName>BuildFactory/${project.artifactId}</applicationName>
+                    <deployables>
+                        <openshift.ResourcesFile name="/deployment" location="target/classes/deployment.yml">
+                            <scanPlaceholders>true</scanPlaceholders>
+                            <preScannedPlaceholders>true</preScannedPlaceholders>
+                            <delimiters>{{ }}</delimiters>
+                            <fileEncodings>
+                                <entry key=".+\.properties">ISO-8859-1</entry>
+                            </fileEncodings>
+                            <mergePatchType>strategic</mergePatchType>
+                            <propagationPolicy>Foreground</propagationPolicy>
+                            <updateMethod>patch</updateMethod>
+                            <createOrder>60</createOrder>
+                            <modifyOrder>50</modifyOrder>
+                            <destroyOrder>40</destroyOrder>
+                            <displayResourceOnLogs>false</displayResourceOnLogs>
+                            <showContainerLogs>false</showContainerLogs>
+                            <bytesToReadFromContainerLogs>4000</bytesToReadFromContainerLogs>
+                        </openshift.ResourcesFile>
+                    </deployables>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>pl.project13.maven</groupId>
+                <artifactId>git-commit-id-plugin</artifactId>
+                <version>4.0.0</version>
+                <executions>
+                    <execution>
+                        <id>get-the-git-infos</id>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <skipPom>false</skipPom>
+                    <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                    <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+                    <includeOnlyProperties>
+                        <includeOnlyProperty>^git.build.(time|version)$</includeOnlyProperty>
+                        <includeOnlyProperty>^git.commit.id.(abbrev|full)$</includeOnlyProperty>
+                    </includeOnlyProperties>
+                    <commitIdGenerationMode>full</commitIdGenerationMode>
+                </configuration>
+            </plugin>
+        </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+    </build>
+  
+   <distributionManagement>
+        <repository>
+            <id>${nexus.serverid}</id>
+            <name>Releases</name>
+            <url>${nexus.baseurl}/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>${nexus.serverid}</id>
+            <name>Snapshots</name>
+            <url>${nexus.baseurl}/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <site>
+            <id>build-doc</id>
+            <name>Sites</name>
+            <url>scp://build-doc/APPLICATIONS/build/doc/sites/${siteDocRoot}/${project.artifactId}</url>
+        </site>
+    </distributionManagement>
+  
+</project>

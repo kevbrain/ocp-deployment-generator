@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Built-By: kevyn.schrondweiler
+Build-Jdk: 15.0.2
+Implementation-Title: openshift-deployment-generator-ms
+Implementation-Vendor-Id: com.bil.buildfactory
+Implementation-URL: https://spring.io/projects/spring-boot/openshift-dep
+ loyment-generator-ms-parent/openshift-deployment-generator-ms
+Created-By: Maven Integration for Eclipse
+Implementation-Version: 0.0.1-SNAPSHOT
+

@@ -1,0 +1,188 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: ocp-deployment-generator-cm-0
+  labels:
+    app: ocp-deployment-generator
+data:
+  bil.environment: "{{bil.environment}}"
+  bil.micro.actuator.username: "{{bil.micro.actuator.username}}"
+  cluster-suffix: "{{cluster-suffix}}"
+  management.port: "{{management.port}}"
+  ocp-cluster.registry: "{{ocp-cluster.registry}}"
+  project.cpu: "{{project.cpu}}"
+  project.memory: "{{project.memory}}"
+  server.port: "{{server.port}}"
+  path.template: "{{path.template}}"
+---
+kind: Secret
+apiVersion: v1
+metadata:
+  name: ocp-deployment-generator-secret-0
+  labels:
+    app: ocp-deployment-generator    
+data:
+  bil.micro.actuator.password.b64: {{bil.micro.actuator.password.b64}}
+  management.actuator.auth.basic.b64: {{management.actuator.auth.basic.b64}}
+type: Opaque
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  annotations:
+    build-commit: '@git.commit.id.abbrev@'
+    build-date: "@git.build.time@"
+  name: ocp-deployment-generator
+  labels:
+    app: ocp-deployment-generator
+spec:
+  replicas: {{ocp-replicas}}
+  selector:
+    matchLabels:
+      app: ocp-deployment-generator
+  template:
+    metadata:
+      name: ocp-deployment-generator
+      labels:
+        app: ocp-deployment-generator
+      annotations:
+        build-commit: '@git.commit.id.abbrev@'
+        build-date: "@git.build.time@"
+    spec:
+      volumes:
+        - name: logs
+          emptyDir: {}
+        - name: templates
+          emptyDir: {}
+        - name: deployment-template-cm-vol
+          configMap:
+            name: ocp-deployment-generator-template
+            items:
+              - key: deployment.yaml
+                path: deployment.yaml
+              - key: mandatoryKeyConfigMap.txt
+                path: mandatoryKeyConfigMap.txt
+              - key: mandatoryKeySecret.txt
+                path: mandatoryKeySecret.txt
+              - key: placeHoldersToIgnore.txt
+                path: placeHoldersToIgnore.txt
+            defaultMode: 420
+      containers:
+        - name: microservice-pod 
+          resources:
+            requests:
+              memory: {{project.memory}}
+              cpu : {{project.cpu}}
+            limits:
+              memory: {{project.memory}}
+              cpu : {{project.cpu}}
+          readinessProbe:
+            httpGet:
+              path: actuator/health
+              port: 8080
+              scheme: HTTP
+          env:
+            - name: path.template
+              valueFrom:
+                configMapKeyRef:
+                  name: ocp-deployment-generator-cm-0
+                  key: path.template
+            - name: bil.environment
+              valueFrom:
+                configMapKeyRef:
+                  name: ocp-deployment-generator-cm-0
+                  key: bil.environment
+            - name: bil.micro.actuator.username
+              valueFrom:
+                configMapKeyRef:
+                  name: ocp-deployment-generator-cm-0
+                  key: bil.micro.actuator.username
+            - name: cluster-suffix
+              valueFrom:
+                configMapKeyRef:
+                  name: ocp-deployment-generator-cm-0
+                  key: cluster-suffix
+            - name: management.port
+              valueFrom:
+                configMapKeyRef:
+                  name: ocp-deployment-generator-cm-0
+                  key: management.port
+            - name: ocp-cluster.registry
+              valueFrom:
+                configMapKeyRef:
+                  name: ocp-deployment-generator-cm-0
+                  key: ocp-cluster.registry
+            - name: project.cpu
+              valueFrom:
+                configMapKeyRef:
+                  name: ocp-deployment-generator-cm-0
+                  key: project.cpu
+            - name: project.memory
+              valueFrom:
+                configMapKeyRef:
+                  name: ocp-deployment-generator-cm-0
+                  key: project.memory
+            - name: server.port
+              valueFrom:
+                configMapKeyRef:
+                  name: ocp-deployment-generator-cm-0
+                  key: server.port
+            - name: bil.micro.actuator.password.b64
+              valueFrom:
+                secretKeyRef:
+                  name: ocp-deployment-generator-secret-0
+                  key: bil.micro.actuator.password.b64
+          ports:
+            - containerPort: {{server.port}}
+              protocol: TCP
+              name: http
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: logs
+              mountPath: /Logs
+            - name: templates
+              mountPath: /templates
+            - name: deployment-template-cm-vol
+              mountPath: /templates/resources
+          image: >-
+            {{ocp-cluster.registry}}/{{ocp-namespace}}/ocp-deployment-generator:@project.version@
+      restartPolicy: Always
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: ocp-deployment-generator-service
+  labels:
+    spring-boot: 'true'
+    spring-boot-env: {{bil.environment}}
+    user.name: {{bil.micro.actuator.username}}
+    user.password: {{bil.micro.actuator.password}}
+    app: ocp-deployment-generator
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: {{server.port}}
+      targetPort: {{server.port}}
+  selector:
+    app: ocp-deployment-generator
+---
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: ocp-deployment-generator-route
+  labels:
+    app: ocp-deployment-generator
+spec:
+  host: >-
+    ocp-deployment-generator-{{bil.environment}}.{{cluster-suffix}}
+  to:
+    kind: Service
+    name: ocp-deployment-generator-service
+    weight: 256
+  port:
+    targetPort: '{{server.port}}'
+  tls:
+    termination: edge
+  wildcardPolicy: None
+---

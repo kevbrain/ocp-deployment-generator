@@ -1,0 +1,6 @@
+joinfaces:
+  primefaces:
+    theme: pepper-grinder
+    FONT_AWESOME: true
+path:
+  template: ${path.template}

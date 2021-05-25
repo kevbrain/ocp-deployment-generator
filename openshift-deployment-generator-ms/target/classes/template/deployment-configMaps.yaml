@@ -1,0 +1,27 @@
+<#list configMaps as cm>
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: ${appName}${cm.name}
+  labels:
+    app: ${appName}
+data:
+ <#list cm.selectedKeyValue as itemcm>
+  ${itemcm.keyName}: "${itemcm.value}"
+ </#list>
+---
+</#list>
+<#list configMapsAsvol as cm>
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: ${appName}${cm.name}
+  labels:
+    app: ${appName}
+data:
+ <#list cm.selectedKeyValue as itemcm>
+  ${itemcm.keyName}: >-
+    ${itemcm.value}
+ </#list>
+---
+</#list>
