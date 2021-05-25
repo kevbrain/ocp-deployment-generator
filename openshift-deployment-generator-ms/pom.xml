@@ -80,7 +80,32 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>   
+            </plugin> 
+            			<plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>2.6.0</version>
+                <executions>
+                    <execution>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <allowInsecureRegistries>true</allowInsecureRegistries>
+                    <from>
+                        <image>image-registry.openshift-image-registry.svc.cluster.local:5000/openshift/java:11</image>
+                    </from>
+                    <to>
+                        <image>image-registry.openshift-image-registry.svc.cluster.local:5000/ocp-deployment-generator/ocp-deployment-generator</image>
+                        <tags>
+                            <tag>latest</tag>
+                        </tags>
+                    </to>
+                </configuration>
+            </plugin>  
  			<plugin>
 		        <groupId>org.apache.maven.plugins</groupId>
 		        <artifactId>maven-compiler-plugin</artifactId>
@@ -109,31 +134,7 @@
 			        </argLine>
 			    </configuration>
 			</plugin> 
-			<plugin>
-                <groupId>com.google.cloud.tools</groupId>
-                <artifactId>jib-maven-plugin</artifactId>
-                <version>2.6.0</version>
-                <executions>
-                    <execution>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>build</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <allowInsecureRegistries>true</allowInsecureRegistries>
-                    <from>
-                        <image>image-registry.openshift-image-registry.svc.cluster.local:5000/openshift/java:11</image>
-                    </from>
-                    <to>
-                        <image>image-registry.openshift-image-registry.svc.cluster.local:5000/ocp-deployment-generator/ocp-deployment-generator</image>
-                        <tags>
-                            <tag>latest</tag>
-                        </tags>
-                    </to>
-                </configuration>
-            </plugin>
+
 			
         </plugins>
     </build>
