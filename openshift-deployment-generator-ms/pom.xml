@@ -81,7 +81,7 @@
                     </execution>
                 </executions>
             </plugin> 
-            			<plugin>
+            <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
                 <version>2.6.0</version>
@@ -101,6 +101,7 @@
                     <to>
                         <image>image-registry.openshift-image-registry.svc.cluster.local:5000/ocp-deployment-generator/ocp-deployment-generator</image>
                         <tags>
+                        	<tag>V1.0</tag>
                             <tag>latest</tag>
                         </tags>
                     </to>
@@ -134,6 +135,7 @@
 			        </argLine>
 			    </configuration>
 			</plugin> 
+
 
 			
         </plugins>
