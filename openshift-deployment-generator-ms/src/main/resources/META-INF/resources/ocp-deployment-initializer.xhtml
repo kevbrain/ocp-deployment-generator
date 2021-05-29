@@ -25,9 +25,9 @@
 			<f:facet name="header">
 				<h:panelGrid columns="3">
 					<p:graphicImage name="LOGO_ITS4U_Group_Interstate_COLOR.png"  style="background: transparent;width:200px;margin-right:20px;"/>
-						<div style="position:relative;margin:auto;text-align: center;">
-							<p:outputLabel value="OPENSHIFT Deployment InitialZr" style="font-size: 40px;color:#003b50"></p:outputLabel>
-						</div>
+					
+					<p:outputLabel value="OPENSHIFT Deployment InitialZr"   style="width:100%;text-align: center;font-size: 40px;color:#003b50"></p:outputLabel>
+					
 				</h:panelGrid>			
 			</f:facet>
    	<h:form id="form" prependId="false">
@@ -38,8 +38,8 @@
 	   				<p:menuitem value="Load ms config"/>
 	   				<p:menuitem value="Distribute config in OCP Resources"/>
 	   				<p:menuitem value="Mount Secrets/CM as ENV"/>
-	   				<p:menuitem value="Create / Mount Volumes"/>
-	   				<p:menuitem value="Exposition / runAsUser"/>
+	   				<p:menuitem value="Create - Mount Volumes"/>
+	   				<p:menuitem value="Exposition - RunAsUser"/>
 	   				<p:menuitem value="Generate Deployment"/>
 	   			</p:steps>
 	   			<p:commandButton   icon="fa fa-fw fa-chevron-right" actionListener="#{viewInitializerBean.nextStep}"  update="@form" style="margin:10px;background:#003b50;color:white" />
