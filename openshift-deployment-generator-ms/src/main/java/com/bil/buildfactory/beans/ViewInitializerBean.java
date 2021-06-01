@@ -548,7 +548,7 @@ public class ViewInitializerBean {
    
     public void generateDeployment() throws IOException, TemplateException {
     	
-    	logger.info("Generate deployment for : "+appName);
+    	logger.info("Generate NEW deployment TEMPLATE for : "+appName);
     	this.generator = new TemplateGenerator(pathTemplate);
     	model = new DeploymentModel();
     	model.setAppName(appName);
