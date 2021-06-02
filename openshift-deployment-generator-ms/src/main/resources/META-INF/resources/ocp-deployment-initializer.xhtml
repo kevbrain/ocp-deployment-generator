@@ -35,7 +35,7 @@
 	   		<h:panelGrid columns="3" >
 	   			<p:commandButton   icon="fa fa-fw fa-chevron-left" actionListener="#{viewInitializerBean.previousStep}"  update="@form"  style="margin:10px;background:#003b50;color:white" immediate="true" />
 	   			<p:steps activeIndex="#{viewInitializerBean.activeIndex}" >
-	   				<p:menuitem value="Load ms config"/>
+	   				<p:menuitem value="Load existing config"/>
 	   				<p:menuitem value="Distribute config in OCP Resources"/>
 	   				<p:menuitem value="Mount Secrets/CM as ENV"/>
 	   				<p:menuitem value="Create - Mount Volumes"/>
