@@ -1,4 +1,4 @@
-bil.environment
-management.port
-server.port
-bil.micro.actuator.username
+ocp.environment
+ms.management.port
+ms.server.port
+ms.actuator.username
