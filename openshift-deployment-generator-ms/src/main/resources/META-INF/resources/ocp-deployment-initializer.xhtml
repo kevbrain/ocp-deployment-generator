@@ -56,12 +56,20 @@
 			    
 	   			<h:panelGrid columns="2">	   			
 		   			<h:outputText value="Application Name"/>
-		   			<p:inputText value="#{viewInitializerBean.appName}" immediate="true" style="width:500px;">
+		   			<p:inputText value="#{viewInitializerBean.appName}" immediate="true" style="width:400px;">
 		   				<p:ajax event="change" listener="#{viewInitializerBean.newApp}" update="@form"/>
 		   			</p:inputText>
+					
 					<h:outputText value="GIT url"/>
-		   			<p:inputText immediate="true" style="width:500px;">
-		   				
+		   			<p:inputText immediate="true" style="width:500px;">		   				
+		   			</p:inputText>
+					
+					<h:outputText value="GIT Revision"/>
+		   			<p:inputText immediate="true" style="width:200px;">		   				
+		   			</p:inputText>
+					
+					<h:outputText value="GIT SubDirectory"/>
+		   			<p:inputText immediate="true" style="width:400px;">		   				
 		   			</p:inputText>
 		    	</h:panelGrid>		    	
 		    </p:fieldset>
