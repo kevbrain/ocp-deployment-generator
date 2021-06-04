@@ -26,7 +26,7 @@
 				<h:panelGrid columns="3">
 					<p:graphicImage name="LOGO_ITS4U_Group_Interstate_COLOR.png"  style="background: transparent;width:200px;margin-right:20px;"/>
 					
-					<p:outputLabel value="OPENSHIFT Deployment InitialZr"   style="width:100%;text-align: center;font-size: 40px;color:#003b50"></p:outputLabel>
+					<p:outputLabel value="OCP Deployment InitialZr"   style="width:100%;text-align: center;font-size: 40px;color:#003b50"></p:outputLabel>
 					
 				</h:panelGrid>			
 			</f:facet>
@@ -481,7 +481,7 @@
         				<br/>
         				
 					<p:panel rendered="#{viewInitializerBean.routeExposed}" style="margin-top:40px;">
-						<h:outputLabel value="https://{appName}-{appName}.{{bil.environment}}.{{cluster-suffix}}" style="font-weight: bold;"/>												
+						<h:outputLabel value="https://{appName}-{appName}.{{ocp.environment}}.{{cluster-suffix}}" style="font-weight: bold;"/>												
 					</p:panel>	    
 						<p:spacer/>
 						Run Pod with Specific User ? (mandatory for NAS)
