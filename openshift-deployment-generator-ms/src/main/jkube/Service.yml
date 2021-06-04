@@ -1,0 +1,32 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: ocp-deployment-generator
+  namespace: ocp-deployment-generator
+  labels:
+    app: ocp-deployment-generator
+    app.kubernetes.io/component: ocp-deployment-generator
+    app.kubernetes.io/instance: ocp-deployment-generator
+    app.kubernetes.io/name: java
+    app.kubernetes.io/part-of: ocp-deployment-generator-app
+    app.openshift.io/runtime: java
+    app.openshift.io/runtime-version: openjdk-11-ubi8
+spec:
+  ports:
+    - name: 8080-tcp
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+    - name: 8443-tcp
+      protocol: TCP
+      port: 8443
+      targetPort: 8443
+    - name: 8778-tcp
+      protocol: TCP
+      port: 8778
+      targetPort: 8778
+  selector:
+    app: ocp-deployment-generator
+    deploymentconfig: ocp-deployment-generator
+status:
+

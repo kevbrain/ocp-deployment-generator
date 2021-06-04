@@ -1,0 +1,27 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: ocp-deployment-generator
+  namespace: ocp-deployment-generator
+  labels:
+    app: ocp-deployment-generator
+    app.kubernetes.io/component: ocp-deployment-generator
+    app.kubernetes.io/instance: ocp-deployment-generator
+    app.kubernetes.io/name: java
+    app.kubernetes.io/part-of: ocp-deployment-generator-app
+    app.openshift.io/runtime: java
+    app.openshift.io/runtime-version: openjdk-11-ubi8
+  annotations:
+    openshift.io/host.generated: 'true'
+
+spec:
+  host: ocp-deployment-generator.apps.ocp-lab.its4u.eu
+  to:
+    kind: Service
+    name: ocp-deployment-generator
+    weight: 100
+  port:
+    targetPort: 8080-tcp
+  wildcardPolicy: None
+status:
+

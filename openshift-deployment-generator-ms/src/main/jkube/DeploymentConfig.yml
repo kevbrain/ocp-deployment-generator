@@ -1,0 +1,75 @@
+kind: DeploymentConfig
+apiVersion: apps.openshift.io/v1
+metadata:
+  name: ocp-deployment-generator
+  namespace: ocp-deployment-generator
+  labels:
+    app: ocp-deployment-generator
+    app.kubernetes.io/component: ocp-deployment-generator
+    app.kubernetes.io/instance: ocp-deployment-generator
+    app.kubernetes.io/name: java
+    app.kubernetes.io/part-of: ocp-deployment-generator-app
+    app.openshift.io/runtime: java
+    app.openshift.io/runtime-version: openjdk-11-ubi8
+spec:
+  strategy:
+    type: Rolling
+    rollingParams:
+      updatePeriodSeconds: 1
+      intervalSeconds: 1
+      timeoutSeconds: 600
+      maxUnavailable: 25%
+      maxSurge: 25%
+    resources: {}
+    activeDeadlineSeconds: 21600
+  triggers:
+    - type: ImageChange
+      imageChangeParams:
+        automatic: true
+        containerNames:
+          - ocp-deployment-generator
+        from:
+          kind: ImageStreamTag
+          namespace: ocp-deployment-generator
+          name: 'ocp-deployment-generator:latest'
+        lastTriggeredImage: >-
+          image-registry.openshift-image-registry.svc:5000/ocp-deployment-generator/ocp-deployment-generator@sha256:93e0e861a2296f4662f4ea43196fe3dc490663b6b8cbdbd4f61d5c40e547454a
+    - type: ConfigChange
+  replicas: 1
+  revisionHistoryLimit: 10
+  test: false
+  selector:
+    app: ocp-deployment-generator
+    deploymentconfig: ocp-deployment-generator
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: ocp-deployment-generator
+        deploymentconfig: ocp-deployment-generator
+    spec:
+      containers:
+        - name: ocp-deployment-generator
+          image: >-
+            image-registry.openshift-image-registry.svc:5000/ocp-deployment-generator/ocp-deployment-generator@sha256:93e0e861a2296f4662f4ea43196fe3dc490663b6b8cbdbd4f61d5c40e547454a
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+            - containerPort: 8443
+              protocol: TCP
+            - containerPort: 8778
+              protocol: TCP
+          env:
+            - name: path.template
+              value: /app/resources/template
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+status:
+
