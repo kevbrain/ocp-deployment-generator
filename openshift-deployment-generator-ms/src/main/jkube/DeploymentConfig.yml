@@ -1,10 +1,10 @@
 kind: DeploymentConfig
 apiVersion: apps.openshift.io/v1
 metadata:
-  name: ocp-deployment-generator
+  name: ocp-deployment-generator-ms
   namespace: ocp-deployment-generator
   labels:
-    app: ocp-deployment-generator
+    app: ocp-deployment-generator-ms
     app.kubernetes.io/component: ocp-deployment-generator
     app.kubernetes.io/instance: ocp-deployment-generator
     app.kubernetes.io/name: java
@@ -39,17 +39,17 @@ spec:
   revisionHistoryLimit: 10
   test: false
   selector:
-    app: ocp-deployment-generator
-    deploymentconfig: ocp-deployment-generator
+    app: ocp-deployment-generator-ms
+    deploymentconfig: ocp-deployment-generator-ms
   template:
     metadata:
       creationTimestamp: null
       labels:
-        app: ocp-deployment-generator
-        deploymentconfig: ocp-deployment-generator
+        app: ocp-deployment-generator-ms
+        deploymentconfig: ocp-deployment-generator-ms
     spec:
       containers:
-        - name: ocp-deployment-generator
+        - name: ocp-deployment-generator-ms
           image: >-
             image-registry.openshift-image-registry.svc:5000/ocp-deployment-generator/ocp-deployment-generator:latest
           ports:
