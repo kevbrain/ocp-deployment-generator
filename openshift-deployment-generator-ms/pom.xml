@@ -10,7 +10,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>11</java.version>
     	<joinfaces.version>4.4.2</joinfaces.version>
-          <sonar.coverage.exclusions>
+        <sonar.coverage.exclusions>
             src/main/java/**/ViewInitializerBean.java,
             src/main/java/**/*.java       
         </sonar.coverage.exclusions>
