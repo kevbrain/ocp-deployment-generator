@@ -117,7 +117,7 @@
 			        <all>
 			          <property>
 			            <name>app</name>
-			            <value>ocp-deployment-generator</value>
+			            <value>ocp-deployment-generator-ms</value>
 			          </property>
 			        </all>
 			      </labels>
