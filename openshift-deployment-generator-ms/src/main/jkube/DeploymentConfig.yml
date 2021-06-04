@@ -33,7 +33,7 @@ spec:
           namespace: ocp-deployment-generator
           name: 'ocp-deployment-generator:latest'
         lastTriggeredImage: >-
-          image-registry.openshift-image-registry.svc:5000/ocp-deployment-generator/ocp-deployment-generator@sha256:93e0e861a2296f4662f4ea43196fe3dc490663b6b8cbdbd4f61d5c40e547454a
+          image-registry.openshift-image-registry.svc:5000/ocp-deployment-generator/ocp-deployment-generator:latest
     - type: ConfigChange
   replicas: 1
   revisionHistoryLimit: 10
@@ -51,7 +51,7 @@ spec:
       containers:
         - name: ocp-deployment-generator
           image: >-
-            image-registry.openshift-image-registry.svc:5000/ocp-deployment-generator/ocp-deployment-generator@sha256:93e0e861a2296f4662f4ea43196fe3dc490663b6b8cbdbd4f61d5c40e547454a
+            image-registry.openshift-image-registry.svc:5000/ocp-deployment-generator/ocp-deployment-generator:latest
           ports:
             - containerPort: 8080
               protocol: TCP
