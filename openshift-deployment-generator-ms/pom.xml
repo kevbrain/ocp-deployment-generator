@@ -71,7 +71,9 @@
 		<artifactId>sonar-maven-plugin</artifactId>
 		<version>3.2</version>
 	</dependency>
-	<profiles>
+    </dependencies>
+	
+    <profiles>
 		<profile>
 			<id>sonar</id>
 			<activation>
@@ -83,8 +85,7 @@
 				</sonar.host.url>
 			</properties>
 		</profile>
-	</profiles>
-    </dependencies>
+    </profiles>
     
     <build>
         <plugins>
