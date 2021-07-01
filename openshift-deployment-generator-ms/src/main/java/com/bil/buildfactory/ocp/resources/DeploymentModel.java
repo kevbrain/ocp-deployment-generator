@@ -6,12 +6,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.bil.buildfactory.model.TemplateModel;
+
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public class DeploymentModel {
+public class DeploymentModel extends TemplateModel{
 	
 	
 	public DeploymentModel() {
@@ -28,9 +30,10 @@ public class DeploymentModel {
 	    secret = new HashMap<>();
 	    nas =new ArrayList<>();
 	    serviceAccount = null;
+	    
 	}
 
-	private TemplateGenerator templateGenerator;
+	//private TemplateGenerator templateGenerator;
 	
 	private HashMap<String,String> config;
 	
@@ -55,6 +58,10 @@ public class DeploymentModel {
 	private List<Volumes> nas;
 	
 	private String appName;
+	
+	private String ocpNamespace;
+	
+	private String ocpRegistry;
 	
 	private ServiceAccount serviceAccount;
 	

@@ -53,25 +53,113 @@
    				<div style="position:relative;margin:auto;text-align:center;">		    				    		
 				    	<p:commandButton value="Reset Configuration"  actionListener="#{viewInitializerBean.reset}" update="@form" style="margin:10px;background:#003b50;color:white" />				    					    	
 			    </div>
-			    
-	   			<h:panelGrid columns="2">	   			
-		   			<h:outputText value="Application Name"/>
-		   			<p:inputText value="#{viewInitializerBean.appName}" immediate="true" style="width:400px;">
-		   				<p:ajax event="change" listener="#{viewInitializerBean.newApp}" update="@form"/>
-		   			</p:inputText>
-					
-					<h:outputText value="GIT url"/>
-		   			<p:inputText immediate="true" style="width:500px;">		   				
-		   			</p:inputText>
-					
-					<h:outputText value="GIT Revision"/>
-		   			<p:inputText immediate="true" style="width:200px;">		   				
-		   			</p:inputText>
-					
-					<h:outputText value="GIT SubDirectory"/>
-		   			<p:inputText immediate="true" style="width:400px;">		   				
-		   			</p:inputText>
-		    	</h:panelGrid>		    	
+			    <p:tabView>
+			    	<p:tab title="Project Metadata">
+			    		<h:panelGrid columns="5">	 
+			    	
+						    		<h:panelGrid columns="2">	   			
+							   			<h:outputText value="Application Name"/>
+							   			<p:inputText value="#{viewInitializerBean.appName}"   style="width:400px;" >
+							   				<p:ajax event="change" listener="#{viewInitializerBean.newApp(viewInitializerBean.appName)}" update="@form" />
+							   			</p:inputText>	
+							   			
+							   			<h:outputText value="New Maven Project ?"/>
+							   			<p:selectBooleanButton onLabel="Yes" offLabel="No" style="width:6rem">
+							   				<p:ajax event="change" update="@form" listener="#{mavenInitializerBean.handleNewMavenProject}"/>
+							   			</p:selectBooleanButton>	
+							   			
+							   			<h:outputText value="Group" rendered="#{mavenInitializerBean.newMavenProject}"/>
+							   			<p:inputText value="#{mavenInitializerBean.group}" rendered="#{mavenInitializerBean.newMavenProject}" style="width:500px;" >
+							   				<p:ajax event="change" update="@form" />
+							   			</p:inputText>	
+							   			
+							   			<h:outputText value="Artifact" rendered="#{mavenInitializerBean.newMavenProject}"/>
+							   			<p:inputText value="#{mavenInitializerBean.artifact}" rendered="#{mavenInitializerBean.newMavenProject}" style="width:500px;"/>
+							   			
+							   			<h:outputText value="Description" rendered="#{mavenInitializerBean.newMavenProject}"/>
+							   			<p:inputText value="#{mavenInitializerBean.description}" rendered="#{mavenInitializerBean.newMavenProject}" style="width:500px;"/>
+							   				   			
+							   			<h:outputText value="Java"/>
+							   			<p:selectOneButton value="#{mavenInitializerBean.java}">
+								            <f:selectItem itemLabel="16" itemValue="16"/>
+								            <f:selectItem itemLabel="11" itemValue="11"/>
+								            <f:selectItem itemLabel="8" itemValue="8"/>
+								        </p:selectOneButton>
+								        
+								        <h:outputText value="Publish on Git ?"/>
+							   			<p:selectBooleanButton onLabel="Yes" offLabel="No" style="width:6rem" value="#{mavenInitializerBean.publishOnGit}">
+							   				<p:ajax event="change" update="@form" />
+							   			</p:selectBooleanButton>	
+					    			</h:panelGrid>
+					    			<p:spacer height="10" width="100"></p:spacer>
+					    			<p:panel header="Add Maven dependencies :" rendered="#{mavenInitializerBean.newMavenProject}">
+					    				
+						    			<h:panelGrid columns="1">
+							    			<p:selectBooleanCheckbox value="#{mavenInitializerBean.lombok}" itemLabel="Lombok"/>
+							    			<p:selectBooleanCheckbox value="#{mavenInitializerBean.actuator}" itemLabel="Actuator"/>
+							    			<p:selectBooleanCheckbox value="#{mavenInitializerBean.freemarker}" itemLabel="FreeMarker"/>
+							    			<p:selectBooleanCheckbox value="#{mavenInitializerBean.sonar}" itemLabel="Sonar"/>
+							    			<p:selectBooleanCheckbox value="#{mavenInitializerBean.web}" itemLabel="Web-starter"/>
+							    			<p:selectBooleanCheckbox value="#{mavenInitializerBean.apiRest}" itemLabel="Api Rest"/>
+							    			<p:selectBooleanCheckbox value="#{mavenInitializerBean.springIntegration}" itemLabel="Spring-Integration"/>
+							    			<p:selectBooleanCheckbox value="#{mavenInitializerBean.joinfaces}" itemLabel="JoinFaces"/>
+				    			
+				    					</h:panelGrid>
+				    				</p:panel>
+				    				<p:spacer height="10" width="100"></p:spacer>
+				    				<p:panel header="Generated Project :" rendered="#{mavenInitializerBean.newMavenProject}">
+				    					<p:tree value="#{mavenInitializerBean.root}" var="doc" selectionMode="single" selection="#{mavenInitializerBean.selectedNode}">
+				    						<p:ajax event="select"  listener="#{mavenInitializerBean.onNodeSelect}" oncomplete="PF('dlg1').show()" update=":dlg1"/>
+				    						<p:treeNode expandedIcon="fa fa-fw fa-folder-open" collapsedIcon="fa fa-fw fa-folder">
+								                <h:outputText value="#{doc.name}"/>
+								            </p:treeNode>
+								            <p:treeNode type="Text" icon="fa fa-fw fa-file-alt">
+								                <h:outputText value="#{doc.name}"/>
+								            </p:treeNode>
+				    					</p:tree>
+				    				</p:panel>
+			    					
+					    </h:panelGrid>
+					    <p:commandButton value="Generate Maven project" actionListener="#{mavenInitializerBean.generateResources}" rendered="#{mavenInitializerBean.newMavenProject}" update="@form" />	
+			    	</p:tab>
+			    	
+			    	<p:tab title="Git">
+			    		<h:panelGrid columns="5">
+			    			<h:outputText value="GIT url"/>
+				   			<p:inputText value="#{gitInitializerBean.gitUrl}"  style="width:500px;"/>	
+				   			<p:spacer height="10" width="10"></p:spacer>
+				   			<h:outputText value="GIT user"/>
+				   			<p:inputText value="#{gitInitializerBean.gitUser}"  style="width:200px;"/>		
+				   			
+							
+							<h:outputText value="GIT Revision"/>
+				   			<p:inputText value="#{gitInitializerBean.gitRevision}"  style="width:200px;"/>		
+				   			<p:spacer height="10" width="10"></p:spacer>
+				   			<h:outputText value="GIT password"/>
+				   			<p:password value="#{gitInitializerBean.gitPassword}" toggleMask="true" redisplay="true" style="width:200px;"/>   				
+				   								
+							<h:outputText value="GIT SubDirectory"/>
+				   			<p:inputText value="#{gitInitializerBean.gitSubDirectory}"  style="width:400px;"/>		   				
+		   					
+			    		</h:panelGrid>
+			    		
+			    		<p:commandButton value="Create" actionListener="#{gitInitializerBean.createRepo(viewInitializerBean.appName)}" />
+			    		
+			    	</p:tab>
+			    	<p:tab title="OCP">
+			    			<h:panelGrid columns="2">	   			
+							   			<h:outputText value="NameSpace :"/>
+							   			<p:inputText value="#{ocpInitializerBean.namespace}"   style="width:400px;" >
+							   				<p:ajax event="change"  update="@form" />
+							   			</p:inputText>	
+							   			<h:outputText value="Registry :"/>
+							   			<p:inputText value="#{ocpInitializerBean.registry}"   style="width:800px;" >
+							   				<p:ajax event="change"  update="@form" />
+							   			</p:inputText>
+							</h:panelGrid>
+			    	</p:tab>
+			    </p:tabView>
+	   				    	
 		    </p:fieldset>
 		    <br/>
 		    <p:spacer height="10" width="10"></p:spacer>
@@ -528,12 +616,13 @@
 	         
 	         <p:panel id="deployment" rendered="#{viewInitializerBean.activeIndex==5}" style="position:relative;margin:auto;" >
 	         	<div style="position:relative;margin:auto;text-align:center;">
+	         	<!-- 
 			    		<p:selectBooleanButton  onLabel="Click to group Deployment all-in-one" offLabel="Click to split Deployment" 
 			    		 style="background:#003b50;color:white;width:400px" 
 			    		value="#{viewInitializerBean.splitDeployment}" >
 			    			<p:ajax event="change" update="@form"/>
 			    		</p:selectBooleanButton>
-			    		
+			    -->
 				    	<p:commandButton value="Download the following Deployment-all.yml"  ajax="false" 
 				    		rendered="#{!viewInitializerBean.splitDeployment}"
 				    		onclick="PrimeFaces.monitorDownload(start, stop);" style="margin:10px;background:#003b50;color:white" >
@@ -545,30 +634,36 @@
 				    		onclick="PrimeFaces.monitorDownload(start, stop);" style="margin:10px;background:#003b50;color:white" >
 				    		<p:fileDownload value="#{viewInitializerBean.zipDeployment}"/>
 				    	</p:commandButton>
+				    	
+				    	<p:commandButton value="Publish resources on Project"  ajax="false"  actionListener="#{viewInitializerBean.publishJkube}" update="@form" style="margin:10px;background:#003b50;color:white"/>
+				 
 			    </div> 
 			    
 			    <p:tabView rendered="#{!viewInitializerBean.splitDeployment}">
-			    	<p:tab title="#{viewInitializerBean.templateAllinOne.type}">
-			    		<p:inputTextarea   value="#{viewInitializerBean.templateAllinOne.resourceYaml}" cols="180" rows="10" scrollHeight="200" />
+			    	<p:tab title="#{viewInitializerBean.templateAllinOne.name}">
+			    		<p:inputTextarea   value="#{viewInitializerBean.templateAllinOne.resourceAsString}" cols="100" rows="10" scrollHeight="200" />
 			    	</p:tab>
-			    	<p:tab title="#{viewInitializerBean.implementation_allInOne.type}">
-			    		<p:inputTextarea   value="#{viewInitializerBean.implementation_allInOne.resourceYaml}" cols="180" rows="10" scrollHeight="200" />
+			    	<p:tab title="#{viewInitializerBean.implementation_allInOne.name}">
+			    		<p:inputTextarea   value="#{viewInitializerBean.implementation_allInOne.resourceAsString}" cols="100" rows="10" scrollHeight="200" />
 			    	</p:tab>
 			    </p:tabView>
 			    
 			    <p:tabView value="#{viewInitializerBean.generatedTemplatesResources}" var="resourceTemplate" rendered="#{viewInitializerBean.splitDeployment}">
-			    	<p:tab title="#{resourceTemplate.type}">
-			    		<p:inputTextarea   value="#{resourceTemplate.resourceYaml}" cols="180" rows="10" scrollHeight="200" />
+			    	<p:tab title="#{resourceTemplate.name}">
+			    		<p:inputTextarea   value="#{resourceTemplate.resourceAsString}" cols="100" rows="10" scrollHeight="200" />
 			    	</p:tab>
 			    </p:tabView>
-	         	
-	         	
-	         	
+	         		         		         
 	         </p:panel>
 	         </center>
     	</h:form>
 	</p:panel>
     
+    <p:dialog id="dlg1" header="#{dialogBean.header}" widgetVar="dlg1" minHeight="40" width="1200" showEffect="fade">
+     	<p:scrollPanel style="width:1200px;height:600px">
+	    <p:inputTextarea   value="#{dialogBean.content}" cols="100" rows="5"  />
+	    </p:scrollPanel>
+	</p:dialog>
 
 </h:body>
 </html>

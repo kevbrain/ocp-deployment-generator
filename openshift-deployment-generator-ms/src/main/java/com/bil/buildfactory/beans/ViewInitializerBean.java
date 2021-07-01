@@ -29,14 +29,18 @@ import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.RowEditEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.StreamedContent;
+import org.primefaces.model.TreeNode;
 import org.primefaces.model.file.UploadedFile;
 import org.primefaces.model.file.UploadedFiles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.bil.buildfactory.maven.resources.ProjectArborescenceItem;
 import com.bil.buildfactory.model.FilesToAnalyse;
 import com.bil.buildfactory.ocp.resources.ConfigMap;
 import com.bil.buildfactory.ocp.resources.ConfigResource;
@@ -59,9 +63,17 @@ import lombok.Data;
 
 @Data
 @Component
-@ManagedBean(name = "viewInitializerBean")
-@SessionScoped
+
 public class ViewInitializerBean {
+	
+	@Autowired
+    private GitInitializerBean gitInitializerBean;
+	
+	@Autowired
+	private MavenInitializerBean mavenInitializerBean;
+	
+	@Autowired
+    private OcpInitializerBean ocpInitializerBean;
 	
 	private static Logger logger = LoggerFactory.getLogger(ViewInitializerBean.class);
 	
@@ -161,6 +173,7 @@ public class ViewInitializerBean {
 	@Value("${path.template}")
 	private String pathTemplate;
 
+	
     @PostConstruct
     public void init() {
     	reset();    	
@@ -195,7 +208,7 @@ public class ViewInitializerBean {
     	this.newConfigMapVol=null;
     	this.filesForAnalyse= new ArrayList<>();
     	this.availableKeysAndValues = new HashMap();
-    	this.splitDeployment=false;
+    	this.splitDeployment=true;
     	this.userUid=null;
     	this.userGid=null;
     	this.hostRouteName=null;
@@ -205,8 +218,11 @@ public class ViewInitializerBean {
     	initCommonOcp();
     }
     
-    public void newApp() {
-
+    public void newApp(String projet) {
+    	
+        gitInitializerBean.setGitSubDirectory(appName);
+        //ocpInitializerBean.setNamespace(appName);
+    	mavenInitializerBean.setArtifact(appName);
     }
     
     public void initCommonOcp()  {
@@ -362,6 +378,8 @@ public class ViewInitializerBean {
     			vol.setCmVol(new HashMap<>());		
     	}
     }
+    
+    
     
     public void handleVolPath(Volumes vol) {
     }
@@ -554,6 +572,8 @@ public class ViewInitializerBean {
     	model.setAppName(appName);
     	model.setConfigMaps(configMaps);
     	model.setTemplateGenerator(this.generator);
+    	model.setOcpNamespace(ocpInitializerBean.getNamespace());
+    	model.setOcpRegistry(ocpInitializerBean.getRegistry());
     	
     	if (runAsUser) {    		
 	    	model.setServiceAccount(new ServiceAccount(appName+"-sa"));    	
@@ -593,7 +613,7 @@ public class ViewInitializerBean {
         this.implementation_allInOne = generator.generateImplemenatationAllInOne(model);
         this.generatedTemplatesResources = generator.generateAllDeployments(model);
         
-        InputStream targetStream = new ByteArrayInputStream(this.templateAllinOne.getResourceYaml().getBytes());
+        InputStream targetStream = new ByteArrayInputStream(this.templateAllinOne.getResourceAsString().getBytes());
         fileDeployment = DefaultStreamedContent.builder()
                 .name("deployment.yml")
                 .contentType("application/yml")
@@ -603,10 +623,10 @@ public class ViewInitializerBean {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ZipOutputStream zos = new ZipOutputStream(baos);
         for (TemplateResource resourceOcp : generatedTemplatesResources) {
-        	ZipEntry entry = new ZipEntry(resourceOcp.getType());
-        	entry.setSize(resourceOcp.getResourceYaml().getBytes().length);
+        	ZipEntry entry = new ZipEntry(resourceOcp.getName());
+        	entry.setSize(resourceOcp.getResourceAsString().getBytes().length);
         	zos.putNextEntry(entry);
-        	zos.write(resourceOcp.getResourceYaml().getBytes());
+        	zos.write(resourceOcp.getResourceAsString().getBytes());
         	zos.closeEntry();
         }
         
@@ -717,5 +737,15 @@ public class ViewInitializerBean {
         return myvalues;
     }
    
+    public void publishJkube() {
+    	TreeNode jkube = mavenInitializerBean.getJkube();
+    	for (TemplateResource res: generatedTemplatesResources) {
+    		if (!res.getName().equalsIgnoreCase("pipeline.yml")) {
+    			TreeNode newnode = new DefaultTreeNode("Text",new ProjectArborescenceItem(res.getName(),"Text",res),jkube);
+    		}
+    	}
+    	
+    	
+    }
     
 }

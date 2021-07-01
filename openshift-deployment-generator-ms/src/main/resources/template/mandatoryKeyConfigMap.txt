@@ -1,4 +1,0 @@
-ocp.environment
-ms.management.port
-ms.server.port
-ms.actuator.username

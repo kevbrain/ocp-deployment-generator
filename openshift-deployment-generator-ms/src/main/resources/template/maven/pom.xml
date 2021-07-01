@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>  
-  <groupId>com.its4u.buildfactory</groupId>
-  <artifactId>openshift-deployment-generator-ms</artifactId>
-  <name>openshift-deployment-generator-ms</name>
+  <groupId>${group}</groupId>
+  <artifactId>${artifact}</artifactId>
+  <name>${artifact}</name>
   <version>0.0.1-SNAPSHOT</version>
   
   <properties>
@@ -10,73 +10,89 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>11</java.version>
     	<joinfaces.version>4.4.2</joinfaces.version>
-        <sonar.coverage.exclusions>
-            src/main/java/**/ViewInitializerBean.java,
+        <sonar.coverage.exclusions>           
             src/main/java/**/*.java       
         </sonar.coverage.exclusions>
 	<maven.compiler.source>1.8</maven.compiler.source>
 	<maven.compiler.target>1.8</maven.compiler.target>
   </properties>
+<#if (joinfaces)>  
   <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>org.joinfaces</groupId>
         <artifactId>joinfaces-dependencies</artifactId>
-        <version>${joinfaces.version}</version>
+        <version>${r"${joinfaces.version}"}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
-  
-    <dependencies>
+ </#if> 
+ <dependencies>
+ <#if (actuator)> 
     	<dependency>
 		    <groupId>org.springframework.boot</groupId>
 		    <artifactId>spring-boot-starter-actuator</artifactId>
+		    <#if (!joinfaces)>
+		    <version>2.4.2</version>
+		    </#if> 
 	</dependency>
+ </#if>
+ <#if (web)>
 	<dependency>
 		    <groupId>org.springframework.boot</groupId>
 		    <artifactId>spring-boot-starter-web</artifactId>
+		    <#if (!joinfaces)>
+		    <version>2.4.2</version>
+		    </#if> 
 	</dependency>
-        <dependency>
+</#if>
+<#if (joinfaces)> 	
+    <dependency>
       		<groupId>org.joinfaces</groupId>
       		<artifactId>primefaces-spring-boot-starter</artifactId>
-    	</dependency>
-        <dependency>
+    </dependency>
+</#if>
+    <dependency>
             <groupId>info.picocli</groupId>
             <artifactId>picocli</artifactId>
             <version>4.6.1</version>
-        </dependency>
-        <dependency>
+    </dependency>
+    <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.8.0</version>
-        </dependency>
-        <dependency>
+    </dependency>
+ <#if (freemarker)>   
+    <dependency>
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
-        </dependency>
-        <dependency>
+    </dependency>
+ </#if>
+ <#if (lombok)>  
+    <dependency>
 		<groupId>org.projectlombok</groupId>
 		<artifactId>lombok</artifactId>
 		<scope>provided</scope>
+		<#if (!joinfaces)>
+		    <version>1.18.16</version>
+		</#if> 
 	</dependency>
+ </#if>
 	<dependency>
 		 <groupId>org.apache.commons</groupId>
 		 <artifactId>commons-lang3</artifactId>
 		 <version>3.11</version>
 	</dependency>
+ <#if (sonar)>  	
 	<dependency>
 		<groupId>org.sonarsource.scanner.maven</groupId>
 		<artifactId>sonar-maven-plugin</artifactId>
 		<version>3.2</version>
 	</dependency>
-	<dependency>
-	    <groupId>org.eclipse.jgit</groupId>
-	    <artifactId>org.eclipse.jgit</artifactId>
-	    <version>5.12.0.202106070339-r</version>
-	</dependency>
-    </dependencies>
+</#if>
+</dependencies>
 	    
     <build>
         <plugins>
@@ -104,10 +120,10 @@
                 <configuration>
                     <allowInsecureRegistries>true</allowInsecureRegistries>
                     <from>
-                        <image>image-registry.openshift-image-registry.svc.cluster.local:5000/openshift/java:11</image>
+                        <image>${ocpRegistry}/openshift/java:11</image>
                     </from>
                     <to>
-                        <image>image-registry.openshift-image-registry.svc.cluster.local:5000/ocp-deployment-generator/ocp-deployment-generator</image>
+                        <image>${ocpRegistry}/${ocpNamespace}/${artifact}</image>
                         <tags>
                         	<tag>v.2</tag>
                             <tag>latest</tag>
@@ -126,7 +142,7 @@
 			        <all>
 			          <property>
 			            <name>app</name>
-			            <value>ocp-deployment-generator-ms</value>
+			            <value>${artifact}</value>
 			          </property>
 			        </all>
 			      </labels>

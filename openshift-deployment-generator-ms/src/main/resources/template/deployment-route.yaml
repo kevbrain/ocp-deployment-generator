@@ -6,14 +6,12 @@ metadata:
   labels:
     app: ${appName}
 spec:
-  host: >-
-    ${appName}-${appName}.{{bil.environment}}.{{cluster-suffix}}
   to:
     kind: Service
     name: ${appName}-service
     weight: 256
   port:
-    targetPort: '{{server.port}}'
+    targetPort: 8080
   tls:
     termination: edge
   wildcardPolicy: None

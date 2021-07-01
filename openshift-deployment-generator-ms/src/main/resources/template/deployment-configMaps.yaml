@@ -5,7 +5,7 @@ metadata:
   name: ${appName}${cm.name}
   labels:
     app: ${appName}
-data:
+data: <#if (cm.selectedKeyValue?size < 1)> {} </#if>
  <#list cm.selectedKeyValue as itemcm>
   ${itemcm.keyName}: "${itemcm.value}"
  </#list>

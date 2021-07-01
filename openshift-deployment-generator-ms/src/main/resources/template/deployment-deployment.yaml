@@ -8,7 +8,7 @@ metadata:
   labels:
     app: ${appName}
 spec:
-  replicas: {{ocp-replicas}}
+  replicas: 1
   selector:
     matchLabels:
       app: ${appName}
@@ -52,19 +52,16 @@ spec:
         - name: microservice-pod 
           resources:
             requests:
-              memory: {{project.memory.request}}
-              cpu : {{project.cpu.request}}
+              memory: 250Mi
+              cpu : 200m
             limits:
-              memory: {{project.memory.limit}}
-              cpu : {{project.cpu.limit}}
+              memory: 750Mi
+              cpu : 500m
           readinessProbe:
             httpGet:
               path: actuator/health
               port: 8081
               scheme: HTTP
-              httpHeaders:
-                - name: Authorization
-                  value: Basic {{management.actuator.auth.basic.b64}}
           env:
 <#list configMaps as cm>
    <#list cm.selectedKeyValue as itemcm>
@@ -85,7 +82,7 @@ spec:
    </#list>
 </#list>
           ports:
-            - containerPort: {{server.port}}
+            - containerPort: 8080
               protocol: TCP
               name: http
           imagePullPolicy: Always
@@ -112,7 +109,7 @@ spec:
           workingDir: /tmp
 </#if>
           image: >-
-            {{ocp-cluster.registry}}/{{ocp-namespace}}/${appName}:@project.version@
+            ${ocpRegistry}/${ocpNamespace}/${appName}:latest
 <#if (serviceAccount)?has_content>
       serviceAccount: ${serviceAccount.name}
       securityContext:

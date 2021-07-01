@@ -11,8 +11,8 @@
      	....
           <deployables>
 <#list templateGenerator.generatedResources as resource>
-	<#if (resource.type!="SecurityContextConstraint.yml")>
-           	   <openshift.ResourcesFile name="/${resource.typeName}"  location="target/classes/${resource.type}">
+	<#if (resource.name!="SecurityContextConstraint.yml")>
+           	   <openshift.ResourcesFile name="/${resource.typeName}"  location="target/classes/${resource.name}">
                             <createOrder>${resource.createOrder}</createOrder>
                             <modifyOrder>${resource.modifyOrder}</modifyOrder>
                             <destroyOrder>${resource.destroyOrder}</destroyOrder>
