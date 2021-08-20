@@ -49,42 +49,8 @@ public class InstanceOpenShift {
 		
 		try {
 			
-			HttpRequest request = HttpRequest.newBuilder(uri)
-			          .header("Accept", "application/json")
-			          .build();
-
-			HttpResponse<JsonNode> response_namespaces= Unirest.get(urlCall)
-					  .header("Authorization: Bearer ",this.token)
-					  .header("cache-control", "no-cache")
-					  .asJson();
 	
-			JSONObject myObj = response_namespaces.getBody().getObject();
-			
-			// load dcs , services , routes , secrets
-			JSONArray results = myObj.getJSONArray("items");						
-			for (int i=0;i<results.length();i++) {
-				
-				JSONObject itemsProject = results.getJSONObject(i).getJSONObject("metadata");
-				String projectName = itemsProject.getString("name").toString();	
-				
-				//if ( !(projectName.equalsIgnoreCase("kafka") && openshift.getName().equalsIgnoreCase("PRODUCTION") )) {
-					OpenShiftProject project =new OpenShiftProject(projectName);	
-					
-					//Map<String, Services> svcs= Services.getMapSVC(openshift, projectName);
-					//Map<String, Routes> routes= Routes.getMapRoutes(openshift, projectName);//getMapRoutes(openshift, projectName);	
-					//Map<String, Secret> secrets = Secret.getMapSecrets(openshift, projectName); //getMapSecrets(openshift, projectName);
-					//Map<String, ConfigMap> configMaps = ConfigMap.getMapResources(openshift, projectName); //getMapConfigMap(openshift, projectName);
-					//Map<String, DeploymentConfig> dcs = DeploymentConfig.getMapDC(openshift, projectName, svcs, routes, secrets);//getMapDC(openshift,projectName,svcs,routes,secrets);
-															
-					//project.setDeploymentConfigs(dcs);
-					//project.setServices(svcs);
-					//project.setRoutes(routes);
-					//project.setConfigMaps(configMaps);
-												
-					projects.put(project.getProjectName(),project);
-				//}
-			}
-		} catch (UnirestException e) {
+		} catch (Exception e) {
 			logger.info(e.getMessage());
 		}		
 		return projects;
