@@ -7,12 +7,21 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonarsource.scanner.api.internal.shaded.minimaljson.JsonObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
 public class InstanceOpenShift {
+	
+	@Autowired
+	RestTemplate restTemplate;
 
     private String name;
 	
@@ -49,17 +58,17 @@ public class InstanceOpenShift {
 		
 		try {
 			
-			HttpRequest request = HttpRequest.newBuilder(uri)
-			          .header("Accept", "application/json")
-			          .build();
-
-			HttpResponse<JsonNode> response_namespaces= Unirest.get(urlCall)
-					  .header("Authorization: Bearer ",this.token)
-					  .header("cache-control", "no-cache")
-					  .asJson();
-	
-			JSONObject myObj = response_namespaces.getBody().getObject();
-			
+			HttpHeaders headers = new HttpHeaders();
+			headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
+	        headers.add("Pragma", "no-cache");
+	        headers.add("Expires", "0");
+	        headers.add("Accept", "application/json");
+	        
+	              
+	        JsonObject myObj = restTemplate.getForObject("", JsonObject.class); 
+	        System.out.println(myObj);
+	        
+			/*
 			// load dcs , services , routes , secrets
 			JSONArray results = myObj.getJSONArray("items");						
 			for (int i=0;i<results.length();i++) {
@@ -84,7 +93,8 @@ public class InstanceOpenShift {
 					projects.put(project.getProjectName(),project);
 				//}
 			}
-		} catch (UnirestException e) {
+			*/
+		} catch (Exception e) {
 			logger.info(e.getMessage());
 		}		
 		return projects;
