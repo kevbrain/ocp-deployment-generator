@@ -1,0 +1,93 @@
+package com.bil.buildfactory.ocp.resources;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter @Setter
+public class InstanceOpenShift {
+
+    private String name;
+	
+	private String url;
+	
+	private String token;	
+	
+	private Map<String, OpenShiftProject> projects;
+	
+	protected static Logger logger = LoggerFactory.getLogger(InstanceOpenShift.class.getName());
+
+	public InstanceOpenShift(String name,String url, String token) {
+		super();
+		this.name = name;
+		this.url = url;
+		this.token = token;
+	}
+
+
+
+	public InstanceOpenShift(String url, String token) {
+		super();
+		this.url = url;
+		this.token = token;
+	}
+	
+	public Map<String, OpenShiftProject> getMapProject() {
+		
+		System.out.println("GET MAP PROJECT ....");
+		String urlCall = this.getUrl()+"/api/v1/namespaces";
+		System.out.println("URL = "+urlCall);
+				
+	    HashMap<String, OpenShiftProject> projects = new HashMap<>();
+		
+		try {
+			
+			HttpRequest request = HttpRequest.newBuilder(uri)
+			          .header("Accept", "application/json")
+			          .build();
+
+			HttpResponse<JsonNode> response_namespaces= Unirest.get(urlCall)
+					  .header("Authorization: Bearer ",this.token)
+					  .header("cache-control", "no-cache")
+					  .asJson();
+	
+			JSONObject myObj = response_namespaces.getBody().getObject();
+			
+			// load dcs , services , routes , secrets
+			JSONArray results = myObj.getJSONArray("items");						
+			for (int i=0;i<results.length();i++) {
+				
+				JSONObject itemsProject = results.getJSONObject(i).getJSONObject("metadata");
+				String projectName = itemsProject.getString("name").toString();	
+				
+				//if ( !(projectName.equalsIgnoreCase("kafka") && openshift.getName().equalsIgnoreCase("PRODUCTION") )) {
+					OpenShiftProject project =new OpenShiftProject(projectName);	
+					
+					//Map<String, Services> svcs= Services.getMapSVC(openshift, projectName);
+					//Map<String, Routes> routes= Routes.getMapRoutes(openshift, projectName);//getMapRoutes(openshift, projectName);	
+					//Map<String, Secret> secrets = Secret.getMapSecrets(openshift, projectName); //getMapSecrets(openshift, projectName);
+					//Map<String, ConfigMap> configMaps = ConfigMap.getMapResources(openshift, projectName); //getMapConfigMap(openshift, projectName);
+					//Map<String, DeploymentConfig> dcs = DeploymentConfig.getMapDC(openshift, projectName, svcs, routes, secrets);//getMapDC(openshift,projectName,svcs,routes,secrets);
+															
+					//project.setDeploymentConfigs(dcs);
+					//project.setServices(svcs);
+					//project.setRoutes(routes);
+					//project.setConfigMaps(configMaps);
+												
+					projects.put(project.getProjectName(),project);
+				//}
+			}
+		} catch (UnirestException e) {
+			logger.info(e.getMessage());
+		}		
+		return projects;
+		
+	}
+}

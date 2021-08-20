@@ -38,6 +38,16 @@
 		    <groupId>org.springframework.boot</groupId>
 		    <artifactId>spring-boot-starter-web</artifactId>
 	</dependency>
+		<dependency>
+   		 	<groupId>com.mashape.unirest</groupId>
+   		 	<artifactId>unirest-java</artifactId>
+    		<version>1.4.9</version>
+		</dependency>
+		<dependency>
+  			<groupId>org.json</groupId>
+  			<artifactId>json</artifactId>
+  			<version>20140107</version>
+		</dependency>
         <dependency>
       		<groupId>org.joinfaces</groupId>
       		<artifactId>primefaces-spring-boot-starter</artifactId>
@@ -108,8 +118,7 @@
                     </from>
                     <to>
                         <image>image-registry.openshift-image-registry.svc.cluster.local:5000/ocp-deployment-generator/ocp-deployment-generator</image>
-                        <tags>
-                        	<tag>v.2</tag>
+                        <tags>                      
                             <tag>latest</tag>
                         </tags>
                     </to>
@@ -148,7 +157,7 @@
               <execution>
                 <goals>
                   <goal>resource</goal>
-                  <goal>build</goal>
+                  <goal>deploy</goal>
                 </goals>
               </execution>
             </executions>

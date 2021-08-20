@@ -148,6 +148,15 @@
 			    	</p:tab>
 			    	<p:tab title="OCP">
 			    			<h:panelGrid columns="2">	   			
+			    			
+							   			<h:outputText value="Server :"/>
+							   			<p:inputText value="#{ocpInitializerBean.server}"   style="width:600px;" >
+							   				<p:ajax event="change"  update="@form" />
+							   			</p:inputText>		
+							   			<h:outputText value="Token :"/>
+							   			<p:inputText value="#{ocpInitializerBean.token}"   style="width:600px;" >
+							   				<p:ajax event="change"  update="@form" />
+							   			</p:inputText>							
 							   			<h:outputText value="NameSpace :"/>
 							   			<p:inputText value="#{ocpInitializerBean.namespace}"   style="width:400px;" >
 							   				<p:ajax event="change"  update="@form" />
@@ -157,6 +166,8 @@
 							   				<p:ajax event="change"  update="@form" />
 							   			</p:inputText>
 							</h:panelGrid>
+							
+							<p:commandButton value="Test Connection" actionListener="#{ocpInitializerBean.testConnection()}" />
 			    	</p:tab>
 			    </p:tabView>
 	   				    	

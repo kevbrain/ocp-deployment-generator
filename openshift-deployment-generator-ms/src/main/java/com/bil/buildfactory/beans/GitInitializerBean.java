@@ -103,9 +103,7 @@ public class GitInitializerBean {
 		
 		git.add().addFilepattern(".").call();
 
-		
-		
-		
+				
 		// Now, we do the commit with a message
 		
 		RevCommit rev =	git.commit().setAuthor("ksc", "ksc@example.com").setMessage("My commit").call();
@@ -117,7 +115,7 @@ public class GitInitializerBean {
 
 	    // push to remote:
 	    PushCommand pushCommand = git.push();
-	    pushCommand.setCredentialsProvider(new UsernamePasswordCredentialsProvider("kevbrain", "Opexia243"));
+	    pushCommand.setCredentialsProvider(new UsernamePasswordCredentialsProvider("openshift", "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"));
 	    // you can add more settings here if needed
 	    pushCommand.call();
 		
