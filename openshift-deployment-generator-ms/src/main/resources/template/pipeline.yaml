@@ -5,18 +5,6 @@ metadata:
   namespace: ${ocpNamespace}
 spec:
   tasks:
-    - name: deploy
-      params:
-        - name: subdirectory
-          value: /${appName}/${appName}
-      runAfter:
-        - push-image
-      taskRef:
-        kind: ClusterTask
-        name: openshift-client-and-maven
-      workspaces:
-        - name: source
-          workspace: source
     - name: git-clone
       params:
         - name: url
@@ -65,7 +53,7 @@ spec:
         - name: source
           workspace: source
         - name: maven-settings
-          workspace: source
+          workspace: maven-settings
     - name: push-image
       params:
         - name: MAVEN_IMAGE
@@ -87,7 +75,7 @@ spec:
         - name: source
           workspace: source
         - name: maven-settings
-          workspace: source
+          workspace: maven-settings
     - name: code-analysis
       params:
         - name: MAVEN_IMAGE
@@ -114,8 +102,9 @@ spec:
         - name: source
           workspace: source
         - name: maven-settings
-          workspace: source
+          workspace: maven-settings
   workspaces:
     - name: source
+    - name: maven-settings
   params: []
   resources: []
