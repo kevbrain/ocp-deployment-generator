@@ -48,6 +48,9 @@ spec:
         app: ocp-deployment-generator
         deploymentconfig: ocp-deployment-generator
     spec:
+      volumes:
+        - name: workspace
+          emptyDir: {}
       containers:
         - name: ocp-deployment-generator
           image: >-
@@ -62,10 +65,15 @@ spec:
           env:
             - name: path.template
               value: /app/resources/template
+            - name: path.workspace
+              value: /WORKSPACE
           resources: {}
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
           imagePullPolicy: Always
+          volumeMounts:
+            - name: workspace
+              mountPath: /WORKSPACE
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
       dnsPolicy: ClusterFirst
