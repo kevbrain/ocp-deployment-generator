@@ -60,7 +60,7 @@ spec:
           readinessProbe:
             httpGet:
               path: actuator/health
-              port: 8081
+              port: 8080
               scheme: HTTP
           env:
 <#list configMaps as cm>
