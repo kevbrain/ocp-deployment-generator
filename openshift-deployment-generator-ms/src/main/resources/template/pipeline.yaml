@@ -106,5 +106,3 @@ spec:
   workspaces:
     - name: source
     - name: maven-settings
-  params: []
-  resources: []
