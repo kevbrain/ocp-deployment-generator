@@ -86,10 +86,7 @@
 								            <f:selectItem itemLabel="8" itemValue="8"/>
 								        </p:selectOneButton>
 								        
-								        <h:outputText value="Publish on Git ?"/>
-							   			<p:selectBooleanButton onLabel="Yes" offLabel="No" style="width:6rem" value="#{mavenInitializerBean.publishOnGit}">
-							   				<p:ajax event="change" update="@form" />
-							   			</p:selectBooleanButton>	
+								     
 					    			</h:panelGrid>
 					    			<p:spacer height="10" width="100"></p:spacer>
 					    			<p:panel header="Add Maven dependencies :" rendered="#{mavenInitializerBean.newMavenProject}">
@@ -120,7 +117,7 @@
 				    				</p:panel>
 			    					
 					    </h:panelGrid>
-					    <p:commandButton value="Generate Maven project" actionListener="#{mavenInitializerBean.generateResources}" rendered="#{mavenInitializerBean.newMavenProject}" update="@form" />	
+					    	
 			    	</p:tab>
 			    	
 			    	<p:tab title="Git">
@@ -135,8 +132,8 @@
 							<h:outputText value="GIT Revision"/>
 				   			<p:inputText value="#{gitInitializerBean.gitRevision}"  style="width:200px;"/>		
 				   			<p:spacer height="10" width="10"></p:spacer>
-				   			<h:outputText value="GIT password"/>
-				   			<p:password value="#{gitInitializerBean.gitPassword}" toggleMask="true" redisplay="true" style="width:200px;"/>   				
+				   			<h:outputText value="GIT Token"/>
+				   			<p:password value="#{gitInitializerBean.gitPassword}" toggleMask="true" redisplay="true" style="width:400px;"/>   				
 				   								
 							<h:outputText value="GIT SubDirectory"/>
 				   			<p:inputText value="#{gitInitializerBean.gitSubDirectory}"  style="width:400px;"/>		   				

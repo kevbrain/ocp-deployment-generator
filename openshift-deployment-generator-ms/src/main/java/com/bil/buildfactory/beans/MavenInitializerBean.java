@@ -108,6 +108,12 @@ public class MavenInitializerBean {
 	
 	public void handleNewMavenProject() {
 		newMavenProject=!newMavenProject;
+		try {
+			generateResources();
+		} catch (IOException | TemplateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void generateResources() throws IOException, TemplateException {

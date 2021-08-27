@@ -52,7 +52,7 @@ public class GitInitializerBean {
 	
 	private String gitUser="kevbrain";
 	
-	private String gitPassword= "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";
+	private String gitPassword= "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";
 	
 	boolean deleteDirectory(File directoryToBeDeleted) {
 	    File[] allContents = directoryToBeDeleted.listFiles();
@@ -115,7 +115,7 @@ public class GitInitializerBean {
 
 	    // push to remote:
 	    PushCommand pushCommand = git.push();
-	    pushCommand.setCredentialsProvider(new UsernamePasswordCredentialsProvider("kevbrain", "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"));
+	    pushCommand.setCredentialsProvider(new UsernamePasswordCredentialsProvider("kevbrain", "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"));
 	    // you can add more settings here if needed
 	    pushCommand.call();
 		
