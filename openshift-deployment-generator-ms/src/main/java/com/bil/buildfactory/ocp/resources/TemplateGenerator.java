@@ -56,6 +56,10 @@ public class TemplateGenerator {
     
     private final Template template_maven_readMe;
     
+    private final Template template_argo_application;
+    
+    private final Template template_argo_kustomization;
+    
     public List<TemplateResource> generatedResources = new ArrayList<>();
 
     public TemplateGenerator(String pathTemplate ) throws IOException {    	
@@ -74,14 +78,20 @@ public class TemplateGenerator {
         template_pvc = cfg.getTemplate("deployment-pvc.yaml");
         template_implementation_allInOne = cfg.getTemplate("implementation-dar.yaml");
         template_implementation_splited = cfg.getTemplate("implementation-split-dar.yaml");
+                
+        // pipeline
         template_pipeline = cfg.getTemplate("pipeline.yaml");
+        
+        // gitops argo
+        template_argo_application = cfg.getTemplate("argo-application.yaml");
+        template_argo_kustomization = cfg.getTemplate("argo-kustomization.yaml");
         
         // maven resources templates
         cfg.setDirectoryForTemplateLoading(new File(pathTemplate+"//maven"));
         template_maven_application = cfg.getTemplate("application");
         template_maven_classpath = cfg.getTemplate("classpath");
         template_maven_lombok = cfg.getTemplate("lombok.config");
-        template_maven_pom = cfg.getTemplate("pom.xml");
+        template_maven_pom = cfg.getTemplate("pom-template.xml");
         template_maven_application_properties = cfg.getTemplate("application-properties");
         template_maven_readMe = cfg.getTemplate("README-md");
         this.generatedResources = new ArrayList<>();
@@ -101,6 +111,8 @@ public class TemplateGenerator {
     public List<TemplateResource> generateAllDeployments(DeploymentModel model) throws IOException, TemplateException {
 
     	this.generatedResources = new ArrayList<>();
+    	
+    	String argoNameApp = "argoApp-"+model.getAppName()+".yaml";
 
     	if (model.getServiceAccount()!=null) {
     		TemplateResource serviceAccount = new TemplateResource("ServiceAccount.yml",generateResourceWithTemplate(model,template_serviceAccount),10,10,55);
@@ -114,13 +126,17 @@ public class TemplateGenerator {
     	TemplateResource deployment = new TemplateResource("Deployment.yml",generateResourceWithTemplate(model,template_deployment),50,50,10);
     	TemplateResource service = new TemplateResource("Service.yml",generateResourceWithTemplate(model,template_service),55,55,20);
     	TemplateResource pipeline = new TemplateResource("pipeline.yml",generateResourceWithTemplate(model,template_pipeline),0,0,0);
-    	
+    	TemplateResource argoApp = new TemplateResource(argoNameApp,generateResourceWithTemplate(model,template_argo_application),0,0,0);
+    	TemplateResource argoKustomization = new TemplateResource("kustomization.yaml",generateResourceWithTemplate(model,template_argo_kustomization),0,0,0);
     	
     	generatedResources.add(configMaps);
     	generatedResources.add(secrets);
     	generatedResources.add(deployment);
     	generatedResources.add(service);
     	generatedResources.add(pipeline);
+    	
+    	generatedResources.add(argoKustomization);
+    	generatedResources.add(argoApp);
     	
     	if (!model.getRoutes().isEmpty()) {
     		TemplateResource route = new TemplateResource("Routes.yml",generateResourceWithTemplate(model,template_route),60,60,10);

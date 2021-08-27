@@ -136,44 +136,6 @@
                     </to>
                 </configuration>
             </plugin>  
-	     <plugin>
-            <groupId>org.eclipse.jkube</groupId>
-            <artifactId>openshift-maven-plugin</artifactId>
-            <version>1.0.2</version>
-            <configuration>
-
-              <resources>
-               	<labels>
-			        <all>
-			          <property>
-			            <name>app</name>
-			            <value>${artifact}</value>
-			          </property>
-			        </all>
-			      </labels>
-              </resources>
-
-              <generator>
-	                <includes>
-	                  <include>spring-boot</include>
-	                </includes>
-	                <config>
-	                  <spring-boot>
-	                    <color>always</color>
-	                  </spring-boot>
-	                </config>
-              </generator>     
-            </configuration>
-
-            <executions>
-              <execution>
-                <goals>
-                  <goal>resource</goal>
-                  <goal>build</goal>
-                </goals>
-              </execution>
-            </executions>
-         </plugin>
         </plugins>
     </build>
 </project>
