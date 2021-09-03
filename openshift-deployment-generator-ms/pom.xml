@@ -109,7 +109,7 @@
 		        <artifactId>maven-compiler-plugin</artifactId>
 		    	<version>3.8.0</version>
       	    </plugin>
-      	    <!--  
+      	      
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
@@ -135,8 +135,7 @@
                     </to>
                 </configuration>
             </plugin>  
-            -->
-            <!--
+            
 	     <plugin>
             <groupId>org.eclipse.jkube</groupId>
             <artifactId>openshift-maven-plugin</artifactId>
@@ -175,7 +174,7 @@
               </execution>
             </executions>
          </plugin>
-         -->
+         
         </plugins>
         <pluginManagement>
         	<plugins>
