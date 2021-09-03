@@ -60,6 +60,8 @@ public class TemplateGenerator {
     
     private final Template template_argo_kustomization;
     
+    private TemplateResource appArgo;
+    
     public List<TemplateResource> generatedResources = new ArrayList<>();
 
     public TemplateGenerator(String pathTemplate ) throws IOException {    	
@@ -108,6 +110,8 @@ public class TemplateGenerator {
     	return allInOne;
     }
     
+    
+    
     public List<TemplateResource> generateAllDeployments(DeploymentModel model) throws IOException, TemplateException {
 
     	this.generatedResources = new ArrayList<>();
@@ -126,7 +130,8 @@ public class TemplateGenerator {
     	TemplateResource deployment = new TemplateResource("Deployment.yml",generateResourceWithTemplate(model,template_deployment),50,50,10);
     	TemplateResource service = new TemplateResource("Service.yml",generateResourceWithTemplate(model,template_service),55,55,20);
     	TemplateResource pipeline = new TemplateResource("pipeline.yml",generateResourceWithTemplate(model,template_pipeline),0,0,0);
-    	TemplateResource argoApp = new TemplateResource(argoNameApp,generateResourceWithTemplate(model,template_argo_application),0,0,0);
+    	appArgo = new TemplateResource(argoNameApp,generateResourceWithTemplate(model,template_argo_application),0,0,0);
+    	
     	TemplateResource argoKustomization = new TemplateResource("kustomization.yaml",generateResourceWithTemplate(model,template_argo_kustomization),0,0,0);
     	
     	generatedResources.add(configMaps);
@@ -136,7 +141,7 @@ public class TemplateGenerator {
     	generatedResources.add(pipeline);
     	
     	generatedResources.add(argoKustomization);
-    	generatedResources.add(argoApp);
+    	generatedResources.add(appArgo);
     	
     	if (!model.getRoutes().isEmpty()) {
     		TemplateResource route = new TemplateResource("Routes.yml",generateResourceWithTemplate(model,template_route),60,60,10);

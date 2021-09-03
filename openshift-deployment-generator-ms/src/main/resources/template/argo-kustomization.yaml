@@ -1,0 +1,9 @@
+resources:
+- Deployment.yml
+- ConfigMaps.yml
+- Secrets.yml
+- Service.yaml
+<#list routes as route>
+- Routes.yaml
+</#list>
+- Pipeline.yml

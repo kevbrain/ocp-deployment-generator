@@ -52,6 +52,7 @@
    			<p:fieldset id="msconfig" legend="Application Metadata" rendered="#{viewInitializerBean.activeIndex==0}">
    				<div style="position:relative;margin:auto;text-align:center;">		    				    		
 				    	<p:commandButton value="Reset Configuration"  actionListener="#{viewInitializerBean.reset}" update="@form" style="margin:10px;background:#003b50;color:white" />				    					    	
+				    	<p:commandButton value="Create and Publish Project"  actionListener="#{viewInitializerBean.reset}" update="@form" style="margin:10px;background:#003b50;color:white" />
 			    </div>
 			    <p:tabView>
 			    	<p:tab title="Project Metadata">
@@ -62,6 +63,20 @@
 							   			<p:inputText value="#{viewInitializerBean.appName}"   style="width:400px;" >
 							   				<p:ajax event="change" listener="#{viewInitializerBean.newApp(viewInitializerBean.appName)}" update="@form" />
 							   			</p:inputText>	
+							   			
+							   			<h:outputText value="Environments"/>
+							   			<h:panelGrid>
+							   				<p:selectBooleanCheckbox value="#{viewInitializerBean.environments['dev']}" itemLabel="DEV">
+							   					<p:ajax event="change" listener="#{viewInitializerBean.handleEnv('dev')}" immediate="true"/>
+							   				</p:selectBooleanCheckbox>
+							   				<p:selectBooleanCheckbox value="#{viewInitializerBean.environments['tst']}" itemLabel="TST">
+							   					<p:ajax event="change" listener="#{viewInitializerBean.handleEnv('tst')}" immediate="true"/>
+							   				</p:selectBooleanCheckbox>
+							   				<p:selectBooleanCheckbox value="#{viewInitializerBean.environments['int']}" itemLabel="INT">
+							   					<p:ajax event="change" listener="#{viewInitializerBean.handleEnv('int')}" immediate="true" />
+							   				</p:selectBooleanCheckbox>
+							   			
+							   			</h:panelGrid>
 							   			
 							   			<h:outputText value="New Maven Project ?"/>
 							   			<p:selectBooleanButton onLabel="Yes" offLabel="No" style="width:6rem">

@@ -103,6 +103,8 @@ public class MavenInitializerBean {
 	
 	private TreeNode jkube;
 	
+	private TreeNode argo;
+	
 	private TreeNode selectedNode;
 	
 	
@@ -139,6 +141,7 @@ public class MavenInitializerBean {
     	TreeNode testjava = new DefaultTreeNode(new ProjectArborescenceItem("java","Folder",null),test);
     	TreeNode main = new DefaultTreeNode(new ProjectArborescenceItem("main","Folder",null),src);
     	jkube = new DefaultTreeNode(new ProjectArborescenceItem("jkube","Folder",null),main);
+    	argo = new DefaultTreeNode(new ProjectArborescenceItem("argo","Folder",null),main);
     	TreeNode java = new DefaultTreeNode(new ProjectArborescenceItem("java","Folder",null),main);
     	TreeNode resources = new DefaultTreeNode(new ProjectArborescenceItem("resources","Folder",null),main);
     	TreeNode appProperties = new DefaultTreeNode("Text",new ProjectArborescenceItem("application.properties","Text",application_properties_generated),resources);

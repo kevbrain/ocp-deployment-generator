@@ -172,7 +172,12 @@ public class ViewInitializerBean {
 	
 	@Value("${path.template}")
 	private String pathTemplate;
-
+	
+	private HashMap<String,Boolean> environments ;
+	
+	private boolean dev_env=true;
+	private boolean tst_env=true;
+	private boolean int_env=true;
 	
     @PostConstruct
     public void init() {
@@ -214,15 +219,23 @@ public class ViewInitializerBean {
     	this.hostRouteName=null;
     	this.runAsUser=false;
     	this.routeExposed=false;
-    	
+    	this.environments = new HashMap<String, Boolean>();
+    	this.environments.put("dev", this.dev_env);
+    	this.environments.put("tst", this.tst_env);
+    	this.environments.put("int", this.int_env);
     	initCommonOcp();
     }
     
     public void newApp(String projet) {
     	
         gitInitializerBean.setGitSubDirectory(appName);
-        //ocpInitializerBean.setNamespace(appName);
-    	mavenInitializerBean.setArtifact(appName);
+       	mavenInitializerBean.setArtifact(appName);
+    }
+    
+    public void handleEnv(String env ) {    	
+        if (environments.get(env)!=null)  {
+    		environments.put(env, !environments.get(env));
+    	}     
     }
     
     public void initCommonOcp()  {
@@ -739,8 +752,13 @@ public class ViewInitializerBean {
    
     public void publishJkube() {
     	TreeNode jkube = mavenInitializerBean.getJkube();
+    	TreeNode argo=  mavenInitializerBean.getArgo();
     	for (TemplateResource res: generatedTemplatesResources) {
-    		if (!res.getName().equalsIgnoreCase("pipeline.yml")) {
+    		String argoNameApp = "argoApp-"+model.getAppName()+".yaml";
+    		if (res.getName().equalsIgnoreCase(argoNameApp)) {
+    			TreeNode nodeArgoApp = new DefaultTreeNode("Text",new ProjectArborescenceItem(res.getName(),"Text",res),argo);
+    			gitInitializerBean.setNodeArgoApp(nodeArgoApp);
+    		} else {
     			TreeNode newnode = new DefaultTreeNode("Text",new ProjectArborescenceItem(res.getName(),"Text",res),jkube);
     		}
     	}
