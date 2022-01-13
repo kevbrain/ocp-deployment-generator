@@ -1,0 +1,11 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: Trigger
+metadata:
+  name: ${appName}-trigger
+  namespace: ${ocpNamespace}
+spec:
+  serviceAccountName: pipeline
+  bindings:
+    - ref: ${appName}
+  template:
+    ref: ${appName}

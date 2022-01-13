@@ -79,7 +79,7 @@
 	<dependency>
 		 <groupId>org.apache.commons</groupId>
 		 <artifactId>commons-lang3</artifactId>
-		 <version>3.11</version>
+	
 	</dependency>
 	<dependency>
 		<groupId>org.sonarsource.scanner.maven</groupId>
@@ -95,7 +95,11 @@
 		    <groupId>org.kohsuke</groupId>
 		    <artifactId>github-api</artifactId>
 		    <version>1.132</version>
-		</dependency>
+	</dependency>
+	<dependency>
+	      <groupId>com.fasterxml.jackson.core</groupId>
+	      <artifactId>jackson-databind</artifactId>
+	 </dependency>
     </dependencies>
 	    
     <build>
@@ -136,6 +140,7 @@
                 </configuration>
             </plugin>  
             
+            <!-- 
 	     <plugin>
             <groupId>org.eclipse.jkube</groupId>
             <artifactId>openshift-maven-plugin</artifactId>
@@ -174,6 +179,7 @@
               </execution>
             </executions>
          </plugin>
+          -->
          
         </plugins>
         <pluginManagement>

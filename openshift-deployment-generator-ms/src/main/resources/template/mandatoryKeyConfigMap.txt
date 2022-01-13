@@ -1,0 +1,5 @@
+ocp.replicas
+ocp-cluster.registry
+ocp-namespace
+ocp.environment
+cluster-suffix

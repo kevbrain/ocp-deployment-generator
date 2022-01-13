@@ -60,6 +60,28 @@ public class TemplateGenerator {
     
     private final Template template_argo_kustomization;
     
+    private final Template template_namespace;
+    
+    private final Template template_rolebinding;
+    
+    private final Template template_cm_maven;
+    
+    private final Template template_pvc_pipeline;
+    
+    private final Template template_pipelineTrigger;
+    	
+    private final Template template_pipelineTriggerBinding;
+           
+    private final Template template_pipelineTriggerTemplate;
+    
+    private final Template template_pipelineEventListener;
+    
+    private final Template template_pipelineEventListenerRoute;
+    
+    private final Template template_mainPageHtml;
+    
+    private final Template template_welcomePageRedirection;
+    
     private TemplateResource appArgo;
     
     public List<TemplateResource> generatedResources = new ArrayList<>();
@@ -80,9 +102,18 @@ public class TemplateGenerator {
         template_pvc = cfg.getTemplate("deployment-pvc.yaml");
         template_implementation_allInOne = cfg.getTemplate("implementation-dar.yaml");
         template_implementation_splited = cfg.getTemplate("implementation-split-dar.yaml");
+        template_namespace= cfg.getTemplate("namespace.yaml");
+        template_rolebinding= cfg.getTemplate("rolebinding.yaml");
+        template_cm_maven=cfg.getTemplate("maven-cm.yaml");
+        template_pvc_pipeline=cfg.getTemplate("pvc-claim-pipeline.yaml");
                 
         // pipeline
         template_pipeline = cfg.getTemplate("pipeline.yaml");
+        template_pipelineTrigger = cfg.getTemplate("pipeline-trigger.yaml");
+        template_pipelineTriggerBinding = cfg.getTemplate("pipeline-triggerBinding.yaml");
+        template_pipelineTriggerTemplate = cfg.getTemplate("pipeline-triggerTemplate.yaml");
+        template_pipelineEventListener = cfg.getTemplate("pipeline-eventListener.yaml");
+        template_pipelineEventListenerRoute  = cfg.getTemplate("pipeline-eventListenerRoute.yaml");
         
         // gitops argo
         template_argo_application = cfg.getTemplate("argo-application.yaml");
@@ -97,6 +128,11 @@ public class TemplateGenerator {
         template_maven_application_properties = cfg.getTemplate("application-properties");
         template_maven_readMe = cfg.getTemplate("README-md");
         this.generatedResources = new ArrayList<>();
+        
+        // joinfaces
+        cfg.setDirectoryForTemplateLoading(new File(pathTemplate+"//joinfaces"));
+        template_mainPageHtml = cfg.getTemplate("main-page.xhtml");
+        template_welcomePageRedirection = cfg.getTemplate("WelcomePageRedirect.template");
     }
 
     
@@ -119,40 +155,67 @@ public class TemplateGenerator {
     	String argoNameApp = "argoApp-"+model.getAppName()+".yaml";
 
     	if (model.getServiceAccount()!=null) {
-    		TemplateResource serviceAccount = new TemplateResource("ServiceAccount.yml",generateResourceWithTemplate(model,template_serviceAccount),10,10,55);
+    		TemplateResource serviceAccount = new TemplateResource("ServiceAccount-"+model.getEnv()+".yml",generateResourceWithTemplate(model,template_serviceAccount),10,10,55);
     		generatedResources.add(serviceAccount);
-    		TemplateResource scc = new TemplateResource("SecurityContextConstraint.yml",generateResourceWithTemplate(model,template_scc),0,0,0);
+    		TemplateResource scc = new TemplateResource("SecurityContextConstraint-"+model.getEnv()+".yml",generateResourceWithTemplate(model,template_scc),0,0,0);
     		generatedResources.add(scc);
     	}
     	
-    	TemplateResource configMaps = new TemplateResource("ConfigMaps.yml",generateResourceWithTemplate(model,template_configMaps),20,20,50);
-    	TemplateResource secrets = new TemplateResource("Secrets.yml",generateResourceWithTemplate(model,template_secrets),25,25,25);
-    	TemplateResource deployment = new TemplateResource("Deployment.yml",generateResourceWithTemplate(model,template_deployment),50,50,10);
-    	TemplateResource service = new TemplateResource("Service.yml",generateResourceWithTemplate(model,template_service),55,55,20);
+    	TemplateResource configMaps = new TemplateResource("ConfigMaps-"+model.getEnv()+".yml",generateResourceWithTemplate(model,template_configMaps),20,20,50);
+    	TemplateResource secrets = new TemplateResource("Secrets-"+model.getEnv()+".yml",generateResourceWithTemplate(model,template_secrets),25,25,25);
+    	TemplateResource deployment = new TemplateResource("Deployment-"+model.getEnv()+".yml",generateResourceWithTemplate(model,template_deployment),50,50,10);
+    	TemplateResource service = new TemplateResource("Service-"+model.getEnv()+".yml",generateResourceWithTemplate(model,template_service),55,55,20);
+    	
     	TemplateResource pipeline = new TemplateResource("pipeline.yml",generateResourceWithTemplate(model,template_pipeline),0,0,0);
+    	TemplateResource pipelineTrigger = new TemplateResource("pipeline-trigger.yml",generateResourceWithTemplate(model,template_pipelineTrigger),0,0,0);
+    	TemplateResource pipelineTriggerTemplate = new TemplateResource("pipeline-triggerTemplate.yml",generateResourceWithTemplate(model,template_pipelineTriggerTemplate),0,0,0);
+    	TemplateResource pipelineTriggerBinding = new TemplateResource("pipeline-triggerBinding.yml",generateResourceWithTemplate(model,template_pipelineTriggerBinding),0,0,0);
+    	TemplateResource pipelineEventListener = new TemplateResource("pipeline-eventListener.yml",generateResourceWithTemplate(model,template_pipelineEventListener),0,0,0);
+    	TemplateResource pipelineEventListenerRoute = new TemplateResource("pipeline-eventListenerRoute.yml",generateResourceWithTemplate(model,template_pipelineEventListenerRoute),0,0,0);
+    	    	
+    	TemplateResource namespace = new TemplateResource("namespace-"+model.getEnv()+".yml",generateResourceWithTemplate(model,template_namespace),0,0,0);
+    	TemplateResource rolebinding= new TemplateResource("rolebinding-"+model.getEnv()+".yml",generateResourceWithTemplate(model,template_rolebinding),0,0,0);
+    	TemplateResource mavensetting= new TemplateResource("mavensetting-cm-"+model.getEnv()+".yml",generateResourceWithTemplate(model,template_cm_maven),0,0,0);
+    	TemplateResource pvcPipeline= new TemplateResource("pvc-claim-pipeline"+".yml",generateResourceWithTemplate(model,template_pvc_pipeline),0,0,0);
     	appArgo = new TemplateResource(argoNameApp,generateResourceWithTemplate(model,template_argo_application),0,0,0);
     	
     	TemplateResource argoKustomization = new TemplateResource("kustomization.yaml",generateResourceWithTemplate(model,template_argo_kustomization),0,0,0);
     	
+    	generatedResources.add(argoKustomization);
+    	generatedResources.add(appArgo);
+    	    	
+    	generatedResources.add(namespace);
+    	//generatedResources.add(rolebinding);
+    	       
     	generatedResources.add(configMaps);
     	generatedResources.add(secrets);
     	generatedResources.add(deployment);
     	generatedResources.add(service);
-    	generatedResources.add(pipeline);
     	
-    	generatedResources.add(argoKustomization);
-    	generatedResources.add(appArgo);
+    	// pipeline build , only on dev
+    	if (model.getEnv().equalsIgnoreCase("dev")) {
+    		generatedResources.add(pipeline);
+    		generatedResources.add(pvcPipeline);
+    		generatedResources.add(pipelineTrigger);
+    		generatedResources.add(pipelineTriggerTemplate);
+    		generatedResources.add(pipelineTriggerBinding);
+    		generatedResources.add(pipelineEventListener); 
+    		generatedResources.add(pipelineEventListenerRoute);
+    		generatedResources.add(mavensetting);
+    	}
     	
     	if (!model.getRoutes().isEmpty()) {
-    		TemplateResource route = new TemplateResource("Routes.yml",generateResourceWithTemplate(model,template_route),60,60,10);
+    		TemplateResource route = new TemplateResource("Routes-"+model.getEnv()+".yml",generateResourceWithTemplate(model,template_route),60,60,10);
     		generatedResources.add(route);
     	}
     	
     	if (!model.getPersitentVolumes().isEmpty()) {
-    		TemplateResource pvc = new TemplateResource("PVClaims.yml",generateResourceWithTemplate(model,template_pvc),30,30,60);
+    		TemplateResource pvc = new TemplateResource("PVClaims-"+model.getEnv()+".yml",generateResourceWithTemplate(model,template_pvc),30,30,60);
     		generatedResources.add(pvc);
     	}
+ 
     	
+    	    	
     	//TemplateResource implementation = new TemplateResource("pom-dar.xml",generateResourceWithTemplate(model,template_implementation_splited),0,0,0);
     	//generatedResources.add(implementation);
     	
@@ -160,10 +223,7 @@ public class TemplateGenerator {
 
     }
     
-    
-    // generate maven resources
-    
-    
+       
 
     public String generateResourceWithTemplate(TemplateModel model,Template template) throws IOException, TemplateException {
 

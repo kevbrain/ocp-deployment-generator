@@ -97,6 +97,10 @@ public class MavenInitializerBean {
 	
 	private TemplateResource maven_readMe;
 	
+	private TemplateResource joinfaces_mainpage;
+	
+	private TemplateResource joinfaces_redirectionPage;
+	
 	private MavenModel model;
 	
 	private TreeNode root;
@@ -109,7 +113,7 @@ public class MavenInitializerBean {
 	
 	
 	public void handleNewMavenProject() {
-		newMavenProject=!newMavenProject;
+		//newMavenProject=!newMavenProject;
 		try {
 			generateResources();
 		} catch (IOException | TemplateException e) {
@@ -130,6 +134,8 @@ public class MavenInitializerBean {
     	this.source_application_generated = new TemplateResource("Application.java", generator.generateResourceWithTemplate(model, generator.getTemplate_maven_application()), 0,0,0);
     	this.application_properties_generated = new TemplateResource("application.properties", generator.generateResourceWithTemplate(model, generator.getTemplate_maven_application_properties()), 0,0,0);
     	this.maven_readMe =new TemplateResource("pom.xml", generator.generateResourceWithTemplate(model,generator.getTemplate_maven_readMe()), 0, 0, 0);
+    	this.joinfaces_mainpage = new TemplateResource(model.getArtifact()+".xhtml", generator.generateResourceWithTemplate(model,generator.getTemplate_mainPageHtml()), 0, 0, 0);
+    	this.joinfaces_redirectionPage = new TemplateResource(model.getArtifact()+"WelcomePageRedirect.java", generator.generateResourceWithTemplate(model,generator.getTemplate_welcomePageRedirection()), 0, 0, 0);
     	
     	root = new DefaultTreeNode(new ProjectArborescenceItem(artifact, "-",null ), null);
     	TreeNode pom1 = new DefaultTreeNode("Text",new ProjectArborescenceItem("pom.xml","Text",pom_generated),root);
@@ -137,11 +143,15 @@ public class MavenInitializerBean {
     	TreeNode classpath = new DefaultTreeNode("Text",new ProjectArborescenceItem(".classpath","Text",maven_classpath_generated),root);
     	TreeNode lombok = new DefaultTreeNode("Text",new ProjectArborescenceItem("lombok.config","Text",lombok_generated),root);
     	TreeNode src = new DefaultTreeNode(new ProjectArborescenceItem("src","Folder",null),root);
+    	src.setExpanded(true);
     	TreeNode test = new DefaultTreeNode(new ProjectArborescenceItem("test","Folder",null),src);
     	TreeNode testjava = new DefaultTreeNode(new ProjectArborescenceItem("java","Folder",null),test);
     	TreeNode main = new DefaultTreeNode(new ProjectArborescenceItem("main","Folder",null),src);
+    	main.setExpanded(true);
     	jkube = new DefaultTreeNode(new ProjectArborescenceItem("jkube","Folder",null),main);
     	argo = new DefaultTreeNode(new ProjectArborescenceItem("argo","Folder",null),main);
+    	jkube.setExpanded(true);
+    	argo.setExpanded(true);
     	TreeNode java = new DefaultTreeNode(new ProjectArborescenceItem("java","Folder",null),main);
     	TreeNode resources = new DefaultTreeNode(new ProjectArborescenceItem("resources","Folder",null),main);
     	TreeNode appProperties = new DefaultTreeNode("Text",new ProjectArborescenceItem("application.properties","Text",application_properties_generated),resources);
@@ -149,6 +159,7 @@ public class MavenInitializerBean {
     	if (joinfaces) {
     		TreeNode metainf = new DefaultTreeNode(new ProjectArborescenceItem("META-INF","Folder",null),resources);
     		TreeNode resourcesMetainf = new DefaultTreeNode(new ProjectArborescenceItem("resources","Folder",null),metainf);
+    		TreeNode mainpage = new DefaultTreeNode("Text",new ProjectArborescenceItem(model.getArtifact()+".xhtml","Text",joinfaces_mainpage),resourcesMetainf);
     	}
     	
     	String[] applicationGroup = this.group.split("[.]");
@@ -164,6 +175,9 @@ public class MavenInitializerBean {
     		parentTest=newGroupPathTest;
     	}
     	TreeNode application = new DefaultTreeNode("Text",new ProjectArborescenceItem("Application.java","Text",source_application_generated),newGroupPath);
+    	if (joinfaces) {
+    		TreeNode welcomePage = new DefaultTreeNode("Text",new ProjectArborescenceItem("WelcomePageRedirect.java","Text",joinfaces_redirectionPage),newGroupPath);
+    	}
 	}
 	
 	public void onNodeSelect(NodeSelectEvent event) {

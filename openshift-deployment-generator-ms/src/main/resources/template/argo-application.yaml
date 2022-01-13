@@ -5,15 +5,15 @@ metadata:
   namespace: openshift-gitops
 spec:
   destination:
-    namespace: lab-workspace
+    namespace: openshift-gitops
     server: https://kubernetes.default.svc
   project: default
   source:
     directory:
       recurse: true
-    path: ${appName}/src/main/jkube
-    repoURL: https://github.com/kevbrain/${appName}.git
-    targetRevision: master
+    path: ${appName}/jkube/
+    repoURL: https://github.com/kevbrain/ocp-gitops-apps-deploy.git
+    targetRevision: main
   syncPolicy:
     automated:
       prune: true

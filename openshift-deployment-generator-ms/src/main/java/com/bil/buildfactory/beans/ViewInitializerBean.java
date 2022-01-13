@@ -23,6 +23,7 @@ import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.primefaces.event.DragDropEvent;
 import org.primefaces.event.FileUploadEvent;
@@ -55,6 +56,7 @@ import com.bil.buildfactory.ocp.resources.ServiceAccount;
 import com.bil.buildfactory.ocp.resources.TemplateGenerator;
 import com.bil.buildfactory.ocp.resources.TemplateResource;
 import com.bil.buildfactory.ocp.resources.Volumes;
+
 
 import freemarker.template.TemplateException;
 import lombok.Data;
@@ -173,20 +175,21 @@ public class ViewInitializerBean {
 	@Value("${path.template}")
 	private String pathTemplate;
 	
-	private HashMap<String,Boolean> environments ;
+
 	
-	private boolean dev_env=true;
-	private boolean tst_env=true;
-	private boolean int_env=true;
+	private boolean disablePublish;
+	
+	
 	
     @PostConstruct
-    public void init() {
+    public void init()  {
     	reset();    	
 
     }
     
     public void reset() {
     	this.appName="";
+    	this.disablePublish=true;
     	this.showUploadFile=true;    	
     	this.cmDroppedKey = new ArrayList<>();
     	this.secretsDroppedKey= new ArrayList<>();
@@ -219,23 +222,38 @@ public class ViewInitializerBean {
     	this.hostRouteName=null;
     	this.runAsUser=false;
     	this.routeExposed=false;
-    	this.environments = new HashMap<String, Boolean>();
-    	this.environments.put("dev", this.dev_env);
-    	this.environments.put("tst", this.tst_env);
-    	this.environments.put("int", this.int_env);
+
     	initCommonOcp();
+    	refreshConfigMapMounting();
+    	    	
     }
     
-    public void newApp(String projet) {
-    	
-        gitInitializerBean.setGitSubDirectory(appName);
-       	mavenInitializerBean.setArtifact(appName);
-    }
-    
-    public void handleEnv(String env ) {    	
-        if (environments.get(env)!=null)  {
-    		environments.put(env, !environments.get(env));
+ 
+    public void handleEnv(String env ) throws IOException, TemplateException {    	
+        if (ocpInitializerBean.getNamespaces().get(env)!=null)  {
+        	ocpInitializerBean.getNamespaces().put(env, !ocpInitializerBean.getNamespaces().get(env));
     	}     
+        
+        refreshAllconf();
+    }
+    
+    public void newApp(String projet) throws IOException, TemplateException {
+    	
+    	appName = appName.toLowerCase();
+    	ocpInitializerBean.setNamespace(appName);
+    	gitInitializerBean.setGitUrl(appName);
+        gitInitializerBean.setGitSubDirectory(appName);
+       	mavenInitializerBean.setArtifact(appName);       	
+       	refreshAllconf();
+    }
+    
+    public void refreshAllconf() throws IOException, TemplateException {
+    	mavenInitializerBean.handleNewMavenProject();       	
+       	publishJkube();
+       	generateDeployment("dev");
+       	if (!(appName.isEmpty()||gitInitializerBean.getGitPassword().isBlank()||gitInitializerBean.getGitPassword().isEmpty())) {
+       		disablePublish=false;
+       	}
     }
     
     public void initCommonOcp()  {
@@ -249,12 +267,13 @@ public class ViewInitializerBean {
 			List<String> mandatoryKeyListSecrets = readFileConfig(pathTemplate+"/mandatoryKeySecret.txt");
 			List<String> placeHoldersToIgnore = readFileConfig(pathTemplate+"/placeHoldersToIgnore.txt");
 			for (String key:mandatoryKeyListCm) {
+				System.out.println("key : "+key);
 				commonOcp.getKeyValue().put(key,"{{"+key+"}}");
 				commonKeys.add(key);
 				allKeys.add(key);
 			}
 			for (String key:mandatoryKeyListSecrets) {
-				commonSecret.getKeyValue().put(key,"{{"+key+".b64}}");
+				commonSecret.getKeyValue().put(key,"{{"+key+"}}");
 				commonKeys.add(key);
 				allKeys.add(key);
 			}
@@ -536,6 +555,10 @@ public class ViewInitializerBean {
     	if (this.activeIndex>0) this.activeIndex--;
     }
     
+    public void goToPage() {
+    	System.out.println("activeIndex = "+activeIndex);
+    }
+    
     public void nextStep() throws IOException, TemplateException {
     	
     	if (this.activeIndex==0) {
@@ -546,11 +569,12 @@ public class ViewInitializerBean {
     		    		
     		refreshConfigMapMounting();
     	}
-    	if (this.activeIndex == 4) {    		
-				generateDeployment();		
+    	if (this.activeIndex == 4) {   
+    		
+    		refreshAllconf();
     	}
     	
-    	if (this.activeIndex<5) {
+    	if (this.activeIndex<6) {
     		this.activeIndex++; 
     	}
     }
@@ -577,17 +601,19 @@ public class ViewInitializerBean {
  
     }
    
-    public void generateDeployment() throws IOException, TemplateException {
+    public void generateDeployment(String env) throws IOException, TemplateException {
     	
     	logger.info("Generate NEW deployment TEMPLATE for : "+appName);
     	this.generator = new TemplateGenerator(pathTemplate);
     	model = new DeploymentModel();
+    	model.setEnv(env);
     	model.setAppName(appName);
     	model.setConfigMaps(configMaps);
     	model.setTemplateGenerator(this.generator);
-    	model.setOcpNamespace(ocpInitializerBean.getNamespace());
+    	model.setOcpNamespace(appName+"-"+env);
     	model.setOcpRegistry(ocpInitializerBean.getRegistry());
-    	
+    	model.setJoinfaces(mavenInitializerBean.isJoinfaces());
+      	
     	if (runAsUser) {    		
 	    	model.setServiceAccount(new ServiceAccount(appName+"-sa"));    	
 	    	model.setUserUid(this.userUid);
@@ -651,6 +677,7 @@ public class ViewInitializerBean {
                 .stream(() -> targetStreamSplit)
                 .build();
         
+        //publishJkube();
     }
     
     public void analyseFile(FilesToAnalyse f) throws IOException {
@@ -750,20 +777,49 @@ public class ViewInitializerBean {
         return myvalues;
     }
    
-    public void publishJkube() {
-    	TreeNode jkube = mavenInitializerBean.getJkube();
-    	TreeNode argo=  mavenInitializerBean.getArgo();
-    	for (TemplateResource res: generatedTemplatesResources) {
-    		String argoNameApp = "argoApp-"+model.getAppName()+".yaml";
-    		if (res.getName().equalsIgnoreCase(argoNameApp)) {
-    			TreeNode nodeArgoApp = new DefaultTreeNode("Text",new ProjectArborescenceItem(res.getName(),"Text",res),argo);
-    			gitInitializerBean.setNodeArgoApp(nodeArgoApp);
-    		} else {
-    			TreeNode newnode = new DefaultTreeNode("Text",new ProjectArborescenceItem(res.getName(),"Text",res),jkube);
-    		}
+    public void publishJkube() throws IOException, TemplateException {
+    	if (model!=null && model.getAppName()!=null) {
+	    	TreeNode jkube = mavenInitializerBean.getJkube();
+	    	jkube.setExpanded(true);
+	    	HashMap<String,TreeNode> mapTreeNodeEnv = new HashMap<String, TreeNode>();
+	    	
+	    	for (String keyEnv:ocpInitializerBean.getNamespaces().keySet()) {
+	    		if (ocpInitializerBean.getNamespaces().get(keyEnv))
+	    			mapTreeNodeEnv.put(keyEnv, new DefaultTreeNode(new ProjectArborescenceItem(model.getAppName()+"-"+keyEnv,"Folder",null),jkube));
+	    	}
+	    	/*
+	    	mapTreeNodeEnv.put("dev", new DefaultTreeNode(new ProjectArborescenceItem("dev","Folder",null),jkube));
+	    	mapTreeNodeEnv.put("tst", new DefaultTreeNode(new ProjectArborescenceItem("tst","Folder",null),jkube));
+	    	mapTreeNodeEnv.put("int", new DefaultTreeNode(new ProjectArborescenceItem("int","Folder",null),jkube));
+	    	*/
+	    	TreeNode argo=  mavenInitializerBean.getArgo();
+	    	String argoNameApp = "argoApp-"+model.getAppName()+".yaml";
+	    	
+	    	
+	    	for (String keyenv:ocpInitializerBean.getNamespaces().keySet()) {
+	 
+	    		if (ocpInitializerBean.getNamespaces().get(keyenv)) {
+	    			generateDeployment(keyenv);
+			    	for (TemplateResource res: generatedTemplatesResources) { 
+			    		// Argo only on DEV
+			    		if (res.getName().equalsIgnoreCase(argoNameApp) && keyenv.equalsIgnoreCase("dev")) {
+			    			TreeNode nodeArgoApp = new DefaultTreeNode("Text",new ProjectArborescenceItem(res.getName(),"Text",res),argo);
+			    			gitInitializerBean.setNodeArgoApp(nodeArgoApp);
+			    		} else {
+			    			TreeNode parent= mapTreeNodeEnv.get(keyenv);
+			    			parent.setExpanded(true);
+			    			TreeNode newnode = new DefaultTreeNode("Text",new ProjectArborescenceItem(res.getName(),"Text",res),parent);
+			    		}
+			    	}
+	    		}
+	    	}
     	}
-    	
-    	
     }
     
+    public String namespaceString(String env) {
+		return appName+"-"+env;
+	}
+    
+    
+   
 }

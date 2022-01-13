@@ -1,0 +1,18 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: ${appName}-pipeline
+  namespace: ${ocpNamespace}
+  generation: 1
+spec:
+  pipelineRef:
+    name: ${appName}-pipeline
+  serviceAccountName: pipeline
+  timeout: 1h0m0s
+  workspaces:
+    - name: source
+      persistentVolumeClaim:
+        claimName: ${appName}-pipeline-claim
+    - configMap:
+        name: maven-settings-cm
+      name: maven-settings

@@ -5,6 +5,17 @@ metadata:
   namespace: ${ocpNamespace}
 spec:
   tasks:
+    - name: rollout-deploy
+      params:
+        - name: SCRIPT
+          value: oc rollout restart deployment/${appName}
+        - name: VERSION
+          value: latest
+      runAfter:
+        - push-image
+      taskRef:
+        kind: ClusterTask
+        name: openshift-client
     - name: git-clone
       params:
         - name: url

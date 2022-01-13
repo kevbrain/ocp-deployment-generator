@@ -30,6 +30,7 @@ public class DeploymentModel extends TemplateModel{
 	    secret = new HashMap<>();
 	    nas =new ArrayList<>();
 	    serviceAccount = null;
+	    env="dev";
 	    
 	}
 
@@ -70,5 +71,9 @@ public class DeploymentModel extends TemplateModel{
 	private String userGid;
 	
 	private String ibmUser;
+	
+	private String env;
+	
+	private boolean joinfaces;
 
 }

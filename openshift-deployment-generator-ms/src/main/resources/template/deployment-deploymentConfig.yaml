@@ -1,19 +1,36 @@
-kind: Deployment
-apiVersion: apps/v1
+kind: DeploymentConfig
+apiVersion: apps.openshift.io/v1
 metadata:
   namespace: ${ocpNamespace}
   annotations:
-    its4u.placeholders/auto: "true"
-    reloader.stakater.com/auto: "true"
     build-commit: '@git.commit.id.abbrev@'
     build-date: "@git.build.time@"
   name: ${appName}
   labels:
     app: ${appName}
 spec:
-  replicas: 1
+  strategy:
+    type: Rolling
+    rollingParams:
+      updatePeriodSeconds: 1
+      intervalSeconds: 1
+      timeoutSeconds: 600
+      maxUnavailable: 25%
+      maxSurge: 25%
+    resources: {}
+    activeDeadlineSeconds: 21600
+  triggers:
+    - type: ConfigChange
+    - type: ImageChange
+      imageChangeParams:
+        automatic: true
+        containerNames:
+          - microservice-pod
+        from:
+          kind: ImageStreamTag
+          namespace: ${ocpNamespace}
+          name: '${appName}:latest'
   selector:
-    matchLabels:
       app: ${appName}
   template:
     metadata:
@@ -61,10 +78,14 @@ spec:
               memory: 750Mi
               cpu : 500m
           readinessProbe:
+            failureThreshold: 3
             httpGet:
               path: actuator/health
               port: 8080
               scheme: HTTP
+            periodSeconds: 10	
+            successThreshold: 1	
+            timeoutSeconds: 1
           env:
 <#list configMaps as cm>
    <#list cm.selectedKeyValue as itemcm>

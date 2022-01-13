@@ -26,7 +26,7 @@
 				<h:panelGrid columns="3">
 					<p:graphicImage name="LOGO_ITS4U_Group_Interstate_COLOR.png"  style="background: transparent;width:200px;margin-right:20px;"/>
 					
-					<p:outputLabel value="OCP Deployment InitialZr"   style="width:100%;text-align: center;font-size: 40px;color:#003b50"></p:outputLabel>
+					<p:outputLabel value="OCP - GitOps Application Bootstrapper"   style="width:100%;text-align: center;font-size: 40px;color:#003b50"></p:outputLabel>
 					
 				</h:panelGrid>			
 			</f:facet>
@@ -34,26 +34,42 @@
    			<center>	   		
 	   		<h:panelGrid columns="3" >
 	   			<p:commandButton   icon="fa fa-fw fa-chevron-left" actionListener="#{viewInitializerBean.previousStep}"  update="@form"  style="margin:10px;background:#003b50;color:white" immediate="true" />
-	   			<p:steps activeIndex="#{viewInitializerBean.activeIndex}" >
-	   				<p:menuitem value="Load existing config"/>
-	   				<p:menuitem value="Distribute config in OCP Resources"/>
+	   			<p:steps activeIndex="#{viewInitializerBean.activeIndex}"  >
+	   				<p:menuitem value="Parametrization"/>	   				
+	   				<p:menuitem value="Distribute placeHolders"/>
 	   				<p:menuitem value="Mount Secrets/CM as ENV"/>
 	   				<p:menuitem value="Create - Mount Volumes"/>
 	   				<p:menuitem value="Exposition - RunAsUser"/>
 	   				<p:menuitem value="Generate Deployment"/>
+	   				<p:menuitem value="Maven Project" />
 	   			</p:steps>
 	   			<p:commandButton   icon="fa fa-fw fa-chevron-right" actionListener="#{viewInitializerBean.nextStep}"  update="@form" style="margin:10px;background:#003b50;color:white" />
 	   		</h:panelGrid>
 	   		</center>
+   			<div style="position:relative;margin:auto;text-align:center;">		    				    		
+				    	<p:commandButton value="Reset Configuration"  actionListener="#{viewInitializerBean.reset}" update="@form" style="margin:10px;background:#003b50;color:white" />				    					    	
+				    	<p:commandButton value="Create and Publish Project"  actionListener="#{gitInitializerBean.createRepo(viewInitializerBean.appName)}" update="@form" style="margin:10px;background:#003b50;color:white" disabled="#{viewInitializerBean.disablePublish}" />
+				    	<p:commandButton value="Create PlaceHolder Project"  actionListener="#{placeHolderManagerBean.createPlaceHolderProject}" update="@form" style="margin:10px;background:#003b50;color:white"  />
+			    </div>
    			
+   			<br/> 
    			
-   			<br/>
+   			<p:panel id="MavenProject" rendered="#{viewInitializerBean.activeIndex==6}" style="position:relative;margin:auto;" >
+   			 
+  					<p:tree value="#{mavenInitializerBean.root}" var="doc" selectionMode="single" selection="#{mavenInitializerBean.selectedNode}" style="width:100%;">
+  						<p:ajax event="select"  listener="#{mavenInitializerBean.onNodeSelect}" oncomplete="PF('dlg1').show()" update=":dlg1"/>
+  						<p:treeNode expandedIcon="fa fa-fw fa-folder-open" collapsedIcon="fa fa-fw fa-folder">
+		                <h:outputText value="#{doc.name}"/>
+		            </p:treeNode>
+		            <p:treeNode type="Text" icon="fa fa-fw fa-file-alt">
+		                <h:outputText value="#{doc.name}"/>
+		            </p:treeNode>
+  					</p:tree>
+				    				
+   			</p:panel>
    			
    			<p:fieldset id="msconfig" legend="Application Metadata" rendered="#{viewInitializerBean.activeIndex==0}">
-   				<div style="position:relative;margin:auto;text-align:center;">		    				    		
-				    	<p:commandButton value="Reset Configuration"  actionListener="#{viewInitializerBean.reset}" update="@form" style="margin:10px;background:#003b50;color:white" />				    					    	
-				    	<p:commandButton value="Create and Publish Project"  actionListener="#{viewInitializerBean.reset}" update="@form" style="margin:10px;background:#003b50;color:white" />
-			    </div>
+   				
 			    <p:tabView>
 			    	<p:tab title="Project Metadata">
 			    		<h:panelGrid columns="5">	 
@@ -66,33 +82,29 @@
 							   			
 							   			<h:outputText value="Environments"/>
 							   			<h:panelGrid>
-							   				<p:selectBooleanCheckbox value="#{viewInitializerBean.environments['dev']}" itemLabel="DEV">
-							   					<p:ajax event="change" listener="#{viewInitializerBean.handleEnv('dev')}" immediate="true"/>
+							   				<p:selectBooleanCheckbox value="#{ocpInitializerBean.namespaces['dev']}" itemLabel="DEV" disabled="true">
+							   					<p:ajax event="change" listener="#{viewInitializerBean.handleEnv('dev')}" immediate="true" update="@form"/>
 							   				</p:selectBooleanCheckbox>
-							   				<p:selectBooleanCheckbox value="#{viewInitializerBean.environments['tst']}" itemLabel="TST">
-							   					<p:ajax event="change" listener="#{viewInitializerBean.handleEnv('tst')}" immediate="true"/>
+							   				<p:selectBooleanCheckbox value="#{ocpInitializerBean.namespaces['tst']}" itemLabel="TST">
+							   					<p:ajax event="change" listener="#{viewInitializerBean.handleEnv('tst')}" immediate="true" update="@form"/>
 							   				</p:selectBooleanCheckbox>
-							   				<p:selectBooleanCheckbox value="#{viewInitializerBean.environments['int']}" itemLabel="INT">
-							   					<p:ajax event="change" listener="#{viewInitializerBean.handleEnv('int')}" immediate="true" />
+							   				<p:selectBooleanCheckbox value="#{ocpInitializerBean.namespaces['int']}" itemLabel="INT">
+							   					<p:ajax event="change" listener="#{viewInitializerBean.handleEnv('int')}" immediate="true" update="@form"/>
 							   				</p:selectBooleanCheckbox>
 							   			
 							   			</h:panelGrid>
 							   			
-							   			<h:outputText value="New Maven Project ?"/>
-							   			<p:selectBooleanButton onLabel="Yes" offLabel="No" style="width:6rem">
-							   				<p:ajax event="change" update="@form" listener="#{mavenInitializerBean.handleNewMavenProject}"/>
-							   			</p:selectBooleanButton>	
 							   			
-							   			<h:outputText value="Group" rendered="#{mavenInitializerBean.newMavenProject}"/>
-							   			<p:inputText value="#{mavenInitializerBean.group}" rendered="#{mavenInitializerBean.newMavenProject}" style="width:500px;" >
+							   			<h:outputText value="Group" />
+							   			<p:inputText value="#{mavenInitializerBean.group}"  style="width:500px;" >
 							   				<p:ajax event="change" update="@form" />
 							   			</p:inputText>	
 							   			
-							   			<h:outputText value="Artifact" rendered="#{mavenInitializerBean.newMavenProject}"/>
-							   			<p:inputText value="#{mavenInitializerBean.artifact}" rendered="#{mavenInitializerBean.newMavenProject}" style="width:500px;"/>
+							   			<h:outputText value="Artifact" />
+							   			<p:inputText value="#{mavenInitializerBean.artifact}"  style="width:500px;"/>
 							   			
-							   			<h:outputText value="Description" rendered="#{mavenInitializerBean.newMavenProject}"/>
-							   			<p:inputText value="#{mavenInitializerBean.description}" rendered="#{mavenInitializerBean.newMavenProject}" style="width:500px;"/>
+							   			<h:outputText value="Description"/>
+							   			<p:inputText value="#{mavenInitializerBean.description}"  style="width:500px;"/>
 							   				   			
 							   			<h:outputText value="Java"/>
 							   			<p:selectOneButton value="#{mavenInitializerBean.java}">
@@ -104,7 +116,7 @@
 								     
 					    			</h:panelGrid>
 					    			<p:spacer height="10" width="100"></p:spacer>
-					    			<p:panel header="Add Maven dependencies :" rendered="#{mavenInitializerBean.newMavenProject}">
+					    			<p:panel header="Add Maven dependencies :" >
 					    				
 						    			<h:panelGrid columns="1">
 							    			<p:selectBooleanCheckbox value="#{mavenInitializerBean.lombok}" itemLabel="Lombok"/>
@@ -119,17 +131,7 @@
 				    					</h:panelGrid>
 				    				</p:panel>
 				    				<p:spacer height="10" width="100"></p:spacer>
-				    				<p:panel header="Generated Project :" rendered="#{mavenInitializerBean.newMavenProject}">
-				    					<p:tree value="#{mavenInitializerBean.root}" var="doc" selectionMode="single" selection="#{mavenInitializerBean.selectedNode}">
-				    						<p:ajax event="select"  listener="#{mavenInitializerBean.onNodeSelect}" oncomplete="PF('dlg1').show()" update=":dlg1"/>
-				    						<p:treeNode expandedIcon="fa fa-fw fa-folder-open" collapsedIcon="fa fa-fw fa-folder">
-								                <h:outputText value="#{doc.name}"/>
-								            </p:treeNode>
-								            <p:treeNode type="Text" icon="fa fa-fw fa-file-alt">
-								                <h:outputText value="#{doc.name}"/>
-								            </p:treeNode>
-				    					</p:tree>
-				    				</p:panel>
+				    				
 			    					
 					    </h:panelGrid>
 					    	
@@ -148,14 +150,16 @@
 				   			<p:inputText value="#{gitInitializerBean.gitRevision}"  style="width:200px;"/>		
 				   			<p:spacer height="10" width="10"></p:spacer>
 				   			<h:outputText value="GIT Token"/>
-				   			<p:password value="#{gitInitializerBean.gitPassword}" toggleMask="true" redisplay="true" style="width:400px;"/>   				
+				   			<p:password value="#{gitInitializerBean.gitPassword}" toggleMask="true" redisplay="true" style="width:400px;">   	
+				   				<p:ajax event="change" listener="#{viewInitializerBean.refreshAllconf}" update="@form" />
+				   			</p:password>
 				   								
 							<h:outputText value="GIT SubDirectory"/>
 				   			<p:inputText value="#{gitInitializerBean.gitSubDirectory}"  style="width:400px;"/>		   				
 		   					
 			    		</h:panelGrid>
 			    		
-			    		<p:commandButton value="Create" actionListener="#{gitInitializerBean.createRepo(viewInitializerBean.appName)}" />
+		    	
 			    		
 			    	</p:tab>
 			    	<p:tab title="OCP">
@@ -167,12 +171,20 @@
 							   			</p:inputText>		
 							   			<h:outputText value="Token :"/>
 							   			<p:inputText value="#{ocpInitializerBean.token}"   style="width:600px;" >
-							   				<p:ajax event="change"  update="@form" />
+							   				<p:ajax event="change" listener="#{viewInitializerBean.refreshAllconf}" update="@form" />
 							   			</p:inputText>							
-							   			<h:outputText value="NameSpace :"/>
-							   			<p:inputText value="#{ocpInitializerBean.namespace}"   style="width:400px;" >
-							   				<p:ajax event="change"  update="@form" />
-							   			</p:inputText>	
+							   			<h:outputText value="NameSpace DEV :" rendered="#{ocpInitializerBean.namespaces['dev']}"/>
+							   			<h:outputText  value="#{viewInitializerBean.namespaceString('dev')}"   style="width:400px;" rendered="#{ocpInitializerBean.namespaces['dev']}"/>
+							   					
+							   			
+							   			<h:outputText value="NameSpace TST :" rendered="#{ocpInitializerBean.namespaces['tst']}"/>
+							   			<h:outputText value="#{viewInitializerBean.namespaceString('tst')}"   style="width:400px;" rendered="#{ocpInitializerBean.namespaces['tst']}"/>
+							   				
+							   			
+							   			<h:outputText value="NameSpace INT :" rendered="#{ocpInitializerBean.namespaces['int']}"/>
+							   			<h:outputText value="#{viewInitializerBean.namespaceString('int')}"   style="width:400px;" rendered="#{ocpInitializerBean.namespaces['int']}" />
+							   				
+							   			
 							   			<h:outputText value="Registry :"/>
 							   			<p:inputText value="#{ocpInitializerBean.registry}"   style="width:800px;" >
 							   				<p:ajax event="change"  update="@form" />
@@ -184,6 +196,7 @@
 			    </p:tabView>
 	   				    	
 		    </p:fieldset>
+		   
 		    <br/>
 		    <p:spacer height="10" width="10"></p:spacer>
 		    <h:outputText value="Drop below the files you want to analyse in order to find placeholders" rendered="#{viewInitializerBean.activeIndex==0}"/>  
@@ -657,8 +670,7 @@
 				    		onclick="PrimeFaces.monitorDownload(start, stop);" style="margin:10px;background:#003b50;color:white" >
 				    		<p:fileDownload value="#{viewInitializerBean.zipDeployment}"/>
 				    	</p:commandButton>
-				    	
-				    	<p:commandButton value="Publish resources on Project"  ajax="false"  actionListener="#{viewInitializerBean.publishJkube}" update="@form" style="margin:10px;background:#003b50;color:white"/>
+				    					    	
 				 
 			    </div> 
 			    

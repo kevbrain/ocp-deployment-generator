@@ -2,8 +2,12 @@ package com.bil.buildfactory.beans;
 
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.bil.buildfactory.ocp.infra.ClusterOcp;
@@ -32,7 +36,7 @@ public class OcpInitializerBean {
 	
 	private String server="https://api.ocp-lab.its4u.eu:6443";
 	
-	private String namespace="lab-workspace";
+	private String namespace="";
 	
 	private String registry="image-registry.openshift-image-registry.svc.cluster.local:5000";
 	
@@ -43,6 +47,23 @@ public class OcpInitializerBean {
 	private ClusterOcp clusterOcp;
 	
 	private NodeList nodeslist;
+	
+	private HashMap<String,Boolean> namespaces ;
+	
+	private boolean dev_env=true;
+	private boolean tst_env=false;
+	private boolean int_env=false;
+	
+	
+	@PostConstruct
+	public void init() {
+    	this.namespaces = new HashMap<String, Boolean>();
+    	this.namespaces.put("dev", this.dev_env);
+    	this.namespaces.put("tst", this.tst_env);
+    	this.namespaces.put("int", this.int_env);
+ 
+	}
+	
 	
 	
 	public void testConnection() {
@@ -154,5 +175,7 @@ public class OcpInitializerBean {
 		
 
 	}
+	
+	
 	
 }

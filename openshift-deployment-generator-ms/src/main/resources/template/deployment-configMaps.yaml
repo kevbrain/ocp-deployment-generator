@@ -2,6 +2,7 @@
 kind: ConfigMap
 apiVersion: v1
 metadata:
+  namespace: ${ocpNamespace}
   name: ${appName}${cm.name}
   labels:
     app: ${appName}
@@ -15,6 +16,7 @@ data: <#if (cm.selectedKeyValue?size < 1)> {} </#if>
 kind: ConfigMap
 apiVersion: v1
 metadata:
+  namespace: ${ocpNamespace}
   name: ${appName}${cm.name}
   labels:
     app: ${appName}

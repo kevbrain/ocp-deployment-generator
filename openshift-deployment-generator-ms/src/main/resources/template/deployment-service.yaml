@@ -1,6 +1,7 @@
 kind: Service
 apiVersion: v1
 metadata:
+  namespace: ${ocpNamespace}
   name: ${appName}-service
   labels:
     app: ${appName}
