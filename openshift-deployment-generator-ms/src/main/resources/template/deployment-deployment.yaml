@@ -5,13 +5,13 @@ metadata:
   annotations:
     its4u.placeholders/auto: "true"
     reloader.stakater.com/auto: "true"
-    build-commit: '@git.commit.id.abbrev@'
-    build-date: "@git.build.time@"
+    build-commit: "{{git.commit}}"
+    build-date: "{{git.date}}"
   name: ${appName}
   labels:
     app: ${appName}
 spec:
-  replicas: 1
+  replicas: {{ocp.replicas}}
   selector:
     matchLabels:
       app: ${appName}
@@ -21,8 +21,8 @@ spec:
       labels:
         app: ${appName}
       annotations:
-        build-commit: '@git.commit.id.abbrev@'
-        build-date: "@git.build.time@"
+        build-commit: "{{git.commit}}"
+        build-date: "{{git.date}}"
     spec:
       volumes:
    <#list emptyDirVolumes as emptyvol>
@@ -112,7 +112,7 @@ spec:
           workingDir: /tmp
 </#if>
           image: >-
-            ${ocpRegistry}/${ocpNamespace}/${appName}:latest
+            {{ocp-cluster.registry}}/{{ocp-namespace}}/${appName}:{{app-version}}
 <#if (serviceAccount)?has_content>
       serviceAccount: ${serviceAccount.name}
       securityContext:

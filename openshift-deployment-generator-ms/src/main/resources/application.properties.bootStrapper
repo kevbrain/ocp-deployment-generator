@@ -1,0 +1,11 @@
+server.port=${server.port}
+
+joinfaces.primefaces.theme=smoothness
+joinfaces.primefaces.FONT_AWESOME=true
+#path.template=/app/resources/template
+path.template=${path.template}
+path.resource=${path.resource}
+path.workspace=${path.workspace}
+spring.application.name=${spring.application.name}
+            
+placeholdermanager.url=${placeholdermanager.url}
